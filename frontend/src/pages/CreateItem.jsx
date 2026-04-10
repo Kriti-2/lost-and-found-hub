@@ -1,0 +1,240 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import api from '../utils/api';
+import { toast } from 'react-toastify';
+import { Upload, Save, ArrowLeft, Camera } from 'lucide-react';
+
+const CreateItem = () => {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const isEditMode = Boolean(id);
+
+    const [formData, setFormData] = useState({
+        type: 'Lost',
+        name: '',
+        description: '',
+        location: '',
+        date: new Date().toISOString().split('T')[0],
+        status: 'Lost'
+    });
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isEditMode) {
+            fetchItem();
+        }
+    }, [id]);
+
+    const fetchItem = async () => {
+        try {
+            const res = await api.get(`/items/${id}`);
+            const item = res.data;
+            setFormData({
+                type: item.type,
+                name: item.name,
+                description: item.description,
+                location: item.location,
+                date: new Date(item.date).toISOString().split('T')[0],
+                status: item.status
+            });
+            if (item.image) {
+                setImagePreview(`http://localhost:5000${item.image}`);
+            }
+        } catch (err) {
+            toast.error("Failed to load item for editing");
+            navigate('/dashboard');
+        }
+    };
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const videoRef = React.useRef(null);
+    const [showWebcam, setShowWebcam] = useState(false);
+
+    const startWebcam = async () => {
+        setShowWebcam(true);
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            if (videoRef.current) videoRef.current.srcObject = stream;
+        } catch (err) {
+            toast.error("Camera access denied or unavailable");
+            setShowWebcam(false);
+        }
+    };
+
+    const capturePhoto = () => {
+        if (!videoRef.current) return;
+        const canvas = document.createElement('canvas');
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
+        
+        canvas.toBlob((blob) => {
+            const file = new File([blob], "webcam_capture.jpg", { type: "image/jpeg" });
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+            stopWebcam();
+        }, 'image/jpeg');
+    };
+
+    const stopWebcam = () => {
+        if (videoRef.current && videoRef.current.srcObject) {
+            videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        }
+        setShowWebcam(false);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        const data = new FormData();
+        Object.keys(formData).forEach(key => {
+            data.append(key, formData[key]);
+        });
+        if (imageFile) {
+            data.append('image', imageFile);
+        }
+
+        try {
+            if (isEditMode) {
+                await api.put(`/items/${id}`, data);
+                toast.success('Item updated successfully');
+            } else {
+                await api.post('/items', data);
+                toast.success('Item posted successfully');
+            }
+            navigate('/dashboard');
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Error saving item');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="app-container" style={{ padding: '40px 20px', maxWidth: '800px' }}>
+            <button onClick={() => navigate(-1)} className="btn btn-outline" style={{ border: 'none', padding: '0', marginBottom: '20px' }}>
+                <ArrowLeft size={20} /> Back
+            </button>
+            
+            <div className="glass-card animate-fade-in" style={{ padding: '40px' }}>
+                <h2 style={{ marginBottom: '30px' }}>{isEditMode ? 'Edit Item Listing' : 'Create New Listing'}</h2>
+                
+                <form onSubmit={handleSubmit}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                        <div className="input-group">
+                            <label className="input-label">Listing Type</label>
+                            <select name="type" value={formData.type} onChange={handleChange} className="input-field" required>
+                                <option value="Lost">I Lost Something</option>
+                                <option value="Found">I Found Something</option>
+                            </select>
+                        </div>
+                        
+                        {isEditMode && (
+                            <div className="input-group">
+                                <label className="input-label">Current Status</label>
+                                <select name="status" value={formData.status} onChange={handleChange} className="input-field" required>
+                                    <option value="Lost">Lost</option>
+                                    <option value="Found">Found</option>
+                                    <option value="Returned">Returned (Resolved)</option>
+                                </select>
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="input-group">
+                        <label className="input-label">Item Name</label>
+                        <input name="name" value={formData.name} onChange={handleChange} className="input-field" placeholder="e.g., Apple AirPods Pro, Student ID Card" required />
+                    </div>
+
+                    <div className="input-group">
+                        <label className="input-label">Description</label>
+                        <textarea name="description" value={formData.description} onChange={handleChange} className="input-field" rows="4" placeholder="Provide detailed identifiers like colors, scratches, inner contents..." required></textarea>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                        <div className="input-group">
+                            <label className="input-label">Location (Lost/Found)</label>
+                            <input name="location" value={formData.location} onChange={handleChange} className="input-field" placeholder="e.g., Library 2nd Floor, Canteen" required />
+                        </div>
+                        
+                        <div className="input-group">
+                            <label className="input-label">Date (Lost/Found)</label>
+                            <input type="date" name="date" value={formData.date} onChange={handleChange} className="input-field" required />
+                        </div>
+                    </div>
+
+                    <div className="input-group" style={{ marginTop: '10px' }}>
+                        <label className="input-label">Upload Image (Optional but highly recommended)</label>
+                        
+                        <div style={{ border: '2px dashed rgba(155, 142, 199, 0.4)', borderRadius: '16px', padding: '30px', textAlign: 'center', background: 'rgba(255,255,255,0.5)', position: 'relative' }}>
+                            <input 
+                                id="fileInput"
+                                type="file" 
+                                accept="image/*" 
+                                onChange={handleImageChange} 
+                                style={{ display: 'none' }}
+                            />
+                            <input 
+                                id="cameraInput"
+                                type="file" 
+                                accept="image/*" 
+                                capture="environment"
+                                onChange={handleImageChange} 
+                                style={{ display: 'none' }}
+                            />
+                            
+                            {showWebcam ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                    <video ref={videoRef} autoPlay playsInline style={{ width: '100%', maxWidth: '400px', borderRadius: '8px', marginBottom: '15px', backgroundColor: '#000' }}></video>
+                                    <div style={{ display: 'flex', gap: '15px' }}>
+                                        <button type="button" onClick={stopWebcam} className="btn btn-outline" style={{ borderColor: '#d32f2f', color: '#d32f2f' }}>Cancel</button>
+                                        <button type="button" onClick={capturePhoto} className="btn btn-primary" style={{ backgroundColor: '#2e7d32', borderColor: '#2e7d32', display: 'flex', alignItems: 'center' }}><Camera size={18} style={{ marginRight: '8px' }} /> Capture Photo</button>
+                                    </div>
+                                </div>
+                            ) : imagePreview ? (
+                                <div>
+                                    <img src={imagePreview} alt="Preview" style={{ maxHeight: '200px', borderRadius: '8px', margin: '0 auto 15px' }} />
+                                    <div>
+                                        <button type="button" onClick={() => { setImagePreview(null); setImageFile(null); }} className="btn btn-outline" style={{ padding: '8px 15px', color: '#d32f2f', borderColor: '#d32f2f' }}>Remove Image</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div style={{ color: 'var(--color-primary)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '15px' }}>
+                                        <button type="button" onClick={() => document.getElementById('fileInput').click()} style={{ background: 'transparent', border: '2px solid var(--color-primary)', borderRadius: '50%', width: '64px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--color-primary)', transition: '0.2s', boxShadow: 'var(--shadow-sm)' }}>
+                                            <Upload size={28} />
+                                        </button>
+                                        <button type="button" onClick={startWebcam} style={{ background: 'var(--color-primary)', border: 'none', borderRadius: '50%', width: '64px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white', transition: '0.2s', boxShadow: 'var(--shadow-md)' }}>
+                                            <Camera size={28} />
+                                        </button>
+                                    </div>
+                                    <p style={{ fontWeight: 500 }}>Choose a file or open Camera</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '30px', padding: '15px' }} disabled={loading}>
+                        <Save size={20} /> {loading ? 'Saving...' : isEditMode ? 'Update Item' : 'Publish Listing'}
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default CreateItem;
