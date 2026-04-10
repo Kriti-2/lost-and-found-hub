@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Calendar, Tag } from 'lucide-react';
+import { IMAGE_BASE_URL } from '../utils/api';
 
 const ItemCard = ({ item }) => {
     
@@ -14,7 +15,7 @@ const ItemCard = ({ item }) => {
             <div style={{ height: '200px', backgroundColor: 'var(--color-bg)', position: 'relative' }}>
                 {item.image ? (
                     <img 
-                        src={`http://localhost:5000${item.image}`} 
+                        src={`${IMAGE_BASE_URL}${item.image}`} 
                         alt={item.name} 
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                     />

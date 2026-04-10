@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import api from '../utils/api';
+import api, { IMAGE_BASE_URL } from '../utils/api';
 import { toast } from 'react-toastify';
 import { Upload, Save, ArrowLeft, Camera } from 'lucide-react';
 
@@ -40,7 +40,7 @@ const CreateItem = () => {
                 status: item.status
             });
             if (item.image) {
-                setImagePreview(`http://localhost:5000${item.image}`);
+                setImagePreview(`${IMAGE_BASE_URL}${item.image}`);
             }
         } catch (err) {
             toast.error("Failed to load item for editing");

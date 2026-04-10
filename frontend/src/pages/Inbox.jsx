@@ -3,9 +3,9 @@ import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import { Send, ArrowLeft, Loader2, MessageSquare } from 'lucide-react';
-import api from '../utils/api';
+import api, { IMAGE_BASE_URL } from '../utils/api';
 
-const socket = io('http://localhost:5000');
+const socket = io(IMAGE_BASE_URL);
 
 const Inbox = () => {
     const { user } = useContext(AuthContext);
