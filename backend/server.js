@@ -9,6 +9,14 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+const rateLimit = require('express-rate-limit');
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: { message: "Too many requests from this IP, please try again after 15 minutes" }
+});
+app.use('/api', limiter);
+
 // Note: To test locally easily without setting up MongoDB, you can use a free cluster
 // Make sure to replace this URI if you have a local MongoDB running or an Atlas cluster
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/lostandfoundhub';

@@ -32,6 +32,21 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
+  /* Quirky Thematic Emoji Cursor */
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%2361509D' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='9' r='6' fill='%23F0E6FF'/><line x1='21' y1='21' x2='13.5' y2='13.5' stroke='%2361509D' stroke-width='4'/></svg>") 9 9, auto;
+}
+
+/* Custom Pointer Cursor for clickable elements */
+a, button, .btn, .chat-list-item, .hover-link, [role="button"], label {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%2361509D' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='9' r='6' fill='%2361509D'/><path d='M6 9 l2 2 l4 -4' stroke='%23ffffff' stroke-width='2'/><line x1='21' y1='21' x2='13.5' y2='13.5' stroke='%2361509D' stroke-width='4'/></svg>") 9 9, pointer !important;
+}
+
+/* Revert inputs and selects to native standard OS cursors */
+input, textarea {
+  cursor: text !important;
+}
+select {
+  cursor: pointer !important;
 }
 
 /* Background blob decorations */
@@ -196,6 +211,72 @@ a {
 .delay-200 { animation-delay: 200ms; opacity: 0; }
 .delay-300 { animation-delay: 300ms; opacity: 0; }
 
+/* Interactive Hover Lift for Cards */
+.interactive-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.interactive-card:hover {
+  transform: translateY(-8px) scale(1.02) !important;
+  box-shadow: 0 20px 40px -5px rgba(155, 142, 199, 0.4) !important;
+}
+
+/* Image zoom effect on hover for cards */
+.card-img-zoom {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.interactive-card:hover .card-img-zoom {
+  transform: scale(1.08) !important;
+}
+
+/* Button Active Press Effect */
+.btn:active {
+  transform: scale(0.94) !important;
+}
+
+/* Hover Underline effect for links */
+.hover-underline {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+}
+.hover-underline::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--color-primary);
+  transform-origin: bottom right;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Skeleton Loading Animation */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.skeleton {
+  background: rgba(155, 142, 199, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
 /* Badges */
 .badge {
   padding: 4px 12px;
@@ -218,4 +299,54 @@ a {
 .badge-returned {
   background-color: #c8e6c9;
   color: #2e7d32;
+}
+
+/* Chat Custom Aesthetics */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chat-bubble {
+  animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(155, 142, 199, 0.4); }
+  70% { box-shadow: 0 0 0 25px rgba(155, 142, 199, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(155, 142, 199, 0); }
+}
+
+.pulse-icon-container {
+  animation: pulse-glow 2.5s infinite, float 6s ease-in-out infinite;
+  border-radius: 50%;
+  background: linear-gradient(135deg, white, rgba(255,255,255,0.7));
+  padding: 30px;
+  box-shadow: var(--shadow-glass);
+}
+
+.chat-list-item {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-left: 4px solid transparent;
+}
+.chat-list-item:hover {
+  background: rgba(255, 255, 255, 0.4);
+  border-left-color: var(--color-tertiary);
+  transform: translateX(4px);
+}
+.chat-list-item.selected {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-left-color: var(--color-primary);
+  box-shadow: inset 0 0 10px rgba(155, 142, 199, 0.05);
+}
+
+.chat-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 142, 199, 0.4);
+  border-radius: 10px;
 }

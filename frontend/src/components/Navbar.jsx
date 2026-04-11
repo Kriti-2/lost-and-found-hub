@@ -34,11 +34,11 @@ const Navbar = () => {
                 </Link>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                    <Link to="/" style={{ fontWeight: 500 }} className="hover-link">Explore</Link>
+                    <Link to="/" style={{ fontWeight: 500 }} className="hover-underline">Explore</Link>
                     
                     {user ? (
                         <>
-                            <Link to="/create" className="btn btn-primary" style={{ padding: '8px 16px' }}>
+                            <Link to="/create" className="btn" style={{ padding: '8px 16px', background: 'linear-gradient(135deg, #61509D, #4a3b78)', color: 'white', boxShadow: '0 4px 15px rgba(97, 80, 157, 0.4)' }}>
                                 <PlusCircle size={18} /> Post Item
                             </Link>
 
@@ -92,7 +92,7 @@ const Navbar = () => {
                             </div>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', borderLeft: '1px solid rgba(0,0,0,0.1)', paddingLeft: '15px' }}>
-                                <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500 }}>
+                                <Link to="/dashboard" className="hover-underline" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500 }}>
                                     <User size={18} /> {user.name}
                                 </Link>
                                 <button onClick={handleLogout} className="btn-outline" style={{ padding: '6px 12px', border: 'none', color: '#d32f2f' }}>

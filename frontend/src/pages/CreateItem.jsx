@@ -125,12 +125,24 @@ const CreateItem = () => {
     };
 
     return (
-        <div className="app-container" style={{ padding: '40px 20px', maxWidth: '800px' }}>
-            <button onClick={() => navigate(-1)} className="btn btn-outline" style={{ border: 'none', padding: '0', marginBottom: '20px' }}>
+        <div className="app-container" style={{ padding: '40px 20px', maxWidth: '800px', position: 'relative' }}>
+            
+            {/* Extended Scattered Floating Background Elements */}
+            <div style={{ position: 'absolute', left: '-25vw', top: '10%', opacity: 0.2, fontSize: '5.5rem', animation: 'float 8s ease-in-out infinite', zIndex: -1, pointerEvents: 'none' }}>🔍</div>
+            <div style={{ position: 'absolute', right: '-20vw', top: '5%', opacity: 0.15, fontSize: '4.5rem', animation: 'float 7s ease-in-out infinite reverse', zIndex: -1, pointerEvents: 'none' }}>📝</div>
+            <div style={{ position: 'absolute', left: '-30vw', top: '40%', opacity: 0.15, fontSize: '6rem', animation: 'float 12s ease-in-out infinite', zIndex: -1, pointerEvents: 'none' }}>🎒</div>
+            <div style={{ position: 'absolute', right: '-28vw', top: '35%', opacity: 0.2, fontSize: '5rem', animation: 'float 9s ease-in-out infinite reverse', zIndex: -1, pointerEvents: 'none' }}>🔑</div>
+            <div style={{ position: 'absolute', left: '-15vw', bottom: '10%', opacity: 0.25, fontSize: '4.5rem', animation: 'float 9s ease-in-out infinite', zIndex: -1, pointerEvents: 'none' }}>🏷️</div>
+            <div style={{ position: 'absolute', right: '-18vw', bottom: '15%', opacity: 0.2, fontSize: '5.5rem', animation: 'float 10s ease-in-out infinite reverse', zIndex: -1, pointerEvents: 'none' }}>📦</div>
+            <div style={{ position: 'absolute', right: '5vw', top: '75%', opacity: 0.15, fontSize: '3.5rem', animation: 'float 6s ease-in-out infinite', zIndex: -1, pointerEvents: 'none' }}>💡</div>
+            <div style={{ position: 'absolute', left: '10vw', top: '80%', opacity: 0.12, fontSize: '3rem', animation: 'float 7s ease-in-out infinite reverse', zIndex: -1, pointerEvents: 'none' }}>📱</div>
+            <div style={{ position: 'absolute', right: '-35vw', bottom: '5%', opacity: 0.15, fontSize: '6.5rem', animation: 'float 11s ease-in-out infinite', zIndex: -1, pointerEvents: 'none' }}>⌚</div>
+
+            <button onClick={() => navigate(-1)} className="btn btn-outline" style={{ border: 'none', padding: '0', marginBottom: '20px', background: 'transparent' }}>
                 <ArrowLeft size={20} /> Back
             </button>
             
-            <div className="glass-card animate-fade-in" style={{ padding: '40px' }}>
+            <div className="glass-card animate-fade-in interactive-card" style={{ padding: '40px', position: 'relative', zIndex: 1 }}>
                 <h2 style={{ marginBottom: '30px' }}>{isEditMode ? 'Edit Item Listing' : 'Create New Listing'}</h2>
                 
                 <form onSubmit={handleSubmit}>

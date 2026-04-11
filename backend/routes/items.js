@@ -4,6 +4,8 @@ const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 const upload = require('../middleware/upload');
 const { sendMail } = require('../utils/mailer');
+const Filter = require('bad-words');
+const filter = new Filter();
 
 const router = express.Router();
 
@@ -24,6 +26,9 @@ router.get('/', async (req, res) => {
 
         if (type) query.type = type;
         if (status) query.status = status;
+        
+        // Hide reported/flagged items from general view
+        query.isHidden = { $ne: true };
 
         const items = await Item.find(query)
             .populate('user', 'name email profilePicture')
@@ -43,6 +48,10 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
     try {
         const { type, name, description, location, date } = req.body;
         
+        if (filter.isProfane(name) || filter.isProfane(description) || filter.isProfane(location)) {
+            return res.status(400).json({ message: 'Inappropriate language detected. Post rejected.' });
+        }
+        
         let imageUrl = '';
         if (req.file) {
             imageUrl = `/uploads/${req.file.filename}`;
@@ -60,6 +69,38 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
         });
 
         const savedItem = await newItem.save();
+
+        // ------------------
+        // Matching Algorithm
+        // ------------------
+        // If a "Found" item is posted, notify users who lost something with a similar name
+        if (savedItem.type === 'Found' && name) {
+            // Split the post's name into keywords (e.g. "blue watch" -> "blue|watch")
+            const keywords = name.split(' ').filter(word => word.length > 2).join('|');
+            
+            if (keywords.length > 0) {
+                const regexPattern = new RegExp(keywords, 'i');
+                const matchingLostItems = await Item.find({
+                    type: 'Lost',
+                    name: { $regex: regexPattern }
+                }).populate('user');
+
+                for (let lostItem of matchingLostItems) {
+                    if (lostItem.user && lostItem.user.email) {
+                        const subject = "Good News: A Potential Match for Your Lost Item!";
+                        const text = `Hello ${lostItem.user.name},\n\nAn item named "${savedItem.name}" was just found and posted on the hub. This may match your lost item "${lostItem.name}"!\n\nLog in to check it out.`;
+                        const html = `<h3>Potential Match Alert!</h3>
+                            <p>Hello ${lostItem.user.name},</p>
+                            <p>Someone just posted a <strong>Found</strong> item named <em>"${savedItem.name}"</em>.</p>
+                            <p>This looks similar to your lost item <em>"${lostItem.name}"</em>!</p>
+                            <p>Please log in to the Lost & Found Hub to see if this is yours.</p>`;
+                        
+                        await sendMail(lostItem.user.email, subject, text, html);
+                    }
+                }
+            }
+        }
+
         res.status(201).json(savedItem);
     } catch (err) {
         res.status(500).json({ message: 'Server Error', error: err.message });
@@ -170,6 +211,12 @@ router.post('/:id/claim', authMiddleware, async (req, res) => {
                 isRead: false
             });
             await ownerUser.save();
+
+            // Send Email to Owner
+            const subject = "Someone Claimed Your Item!";
+            const text = `Hello ${ownerUser.name},\n\n${claimerUser.name} has claimed your item "${item.name}".\nMessage: "${message}"\n\nLogin to the hub to chat with them!`;
+            const html = `<h3>Item Claim Alert!</h3><p>Hello ${ownerUser.name},</p><p><strong>${claimerUser.name}</strong> has claimed your item <em>"${item.name}"</em>.</p><p><strong>Their Message:</strong> "${message}"</p><p>Please log into the app to check your inbox and reply.</p>`;
+            await sendMail(ownerUser.email, subject, text, html);
         }
 
         // Initialize Chat Room
@@ -199,6 +246,32 @@ router.post('/:id/claim', authMiddleware, async (req, res) => {
         res.json({ message: 'Claim request sent successfully!', item });
     } catch (err) {
         console.error("Claim error:", err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// @route   POST /api/items/:id/report
+// @desc    Report an item
+// @access  Private
+router.post('/:id/report', authMiddleware, async (req, res) => {
+    try {
+        const item = await Item.findById(req.params.id);
+        if (!item) return res.status(404).json({ message: 'Item not found' });
+
+        if (item.reports.includes(req.user.id)) {
+            return res.status(400).json({ message: 'You have already reported this item.' });
+        }
+
+        item.reports.push(req.user.id);
+        
+        // Auto-hide if reported by 3 different users
+        if (item.reports.length >= 3) {
+            item.isHidden = true;
+        }
+
+        await item.save();
+        res.json({ message: 'Item reported successfully' });
+    } catch (err) {
         res.status(500).json({ message: 'Server Error' });
     }
 });

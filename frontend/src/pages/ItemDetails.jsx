@@ -46,8 +46,8 @@ const ItemDetails = () => {
     if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>Loading...</div>;
     if (!item) return null;
 
-    const isOwner = user && item.user._id === (user.id || user._id);
-    const hasClaimed = user && item.claims.some(claim => claim.claimerId._id === (user.id || user._id));
+    const isOwner = user && item.user?._id === (user.id || user._id);
+    const hasClaimed = user && item.claims.some(claim => claim.claimerId?._id === (user.id || user._id));
 
     return (
         <div className="app-container animate-fade-in" style={{ padding: '40px 20px' }}>
@@ -88,7 +88,7 @@ const ItemDetails = () => {
                             <UserIcon size={20} style={{ margin: 'auto' }} />
                         </div>
                         <div>
-                            <p style={{ margin: 0, fontWeight: 600 }}>Posted by {item.user.name}</p>
+                            <p style={{ margin: 0, fontWeight: 600 }}>Posted by {item.user?.name || 'Deleted User'}</p>
                             <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-light)' }}>Verified Institution Student <ShieldCheck size={14} color="#2e7d32" style={{ verticalAlign: 'middle' }} /></p>
                         </div>
                     </div>

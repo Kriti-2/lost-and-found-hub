@@ -10,14 +10,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret-key-for-dev';
 
 const bcrypt = require('bcryptjs');
 
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
 // @route   POST /api/auth/register
 // @desc    Register a new user
 router.post('/register', async (req, res) => {
     const { email, name, password } = req.body;
     
-    if (!email.endsWith('@srmist.edu.in')) {
-        return res.status(403).json({ message: 'Only @srmist.edu.in emails are allowed.' });
-    }
+    // Removed srmist check
     
     if (!password || password.length < 6) {
         return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
@@ -27,22 +27,97 @@ router.post('/register', async (req, res) => {
         let user = await User.findOne({ email });
 
         if (user) {
-            return res.status(400).json({ message: 'User already exists. Please login.' });
+            if (user.isVerified) {
+                return res.status(400).json({ message: 'User already exists. Please login.' });
+            } else {
+                // User exists but not verified, resend OTP & update pass
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(password, salt);
+                
+                const otp = generateOTP();
+                user.verificationOTP = otp;
+                user.verificationOTPExpire = Date.now() + 10 * 60 * 1000;
+                user.name = name;
+                user.password = hashedPassword;
+                await user.save();
+
+                await sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
+                return res.json({ message: 'OTP sent to your email. Please verify.', requiresVerification: true });
+            }
         }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        user = new User({ email, name, password: hashedPassword });
+        const otp = generateOTP();
+
+        user = new User({ 
+            email, 
+            name, 
+            password: hashedPassword,
+            verificationOTP: otp,
+            verificationOTPExpire: Date.now() + 10 * 60 * 1000
+        });
+        await user.save();
+
+        await sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
+
+        res.json({ message: 'OTP sent to your email. Please verify.', requiresVerification: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error during registration' });
+    }
+});
+
+// @route   POST /api/auth/verify-email
+// @desc    Verify email using OTP
+router.post('/verify-email', async (req, res) => {
+    const { email, otp } = req.body;
+    try {
+        let user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ message: 'User not found.' });
+
+        if (user.isVerified) return res.status(400).json({ message: 'User already verified.' });
+
+        if (user.verificationOTP !== otp || user.verificationOTPExpire < Date.now()) {
+            return res.status(400).json({ message: 'Invalid or expired OTP.' });
+        }
+
+        user.isVerified = true;
+        user.verificationOTP = undefined;
+        user.verificationOTPExpire = undefined;
         await user.save();
 
         const payload = { id: user._id, email: user.email };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
 
-        res.json({ token, user });
+        res.json({ token, user, message: 'Email verified successfully!' });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error during registration' });
+        res.status(500).json({ message: 'Server error during verification' });
+    }
+});
+
+// @route   POST /api/auth/resend-verification
+// @desc    Resend verification OTP
+router.post('/resend-verification', async (req, res) => {
+    const { email } = req.body;
+    try {
+        let user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ message: 'User not found.' });
+        if (user.isVerified) return res.status(400).json({ message: 'User already verified.' });
+
+        const otp = generateOTP();
+        user.verificationOTP = otp;
+        user.verificationOTPExpire = Date.now() + 10 * 60 * 1000;
+        await user.save();
+
+        await sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
+
+        res.json({ message: 'New OTP sent to your email.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error during OTP resend' });
     }
 });
 
@@ -51,9 +126,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     
-    if (!email.endsWith('@srmist.edu.in')) {
-        return res.status(403).json({ message: 'Only @srmist.edu.in emails are allowed.' });
-    }
+    // Removed srmist check
 
     try {
         let user = await User.findOne({ email });
@@ -64,6 +137,18 @@ router.post('/login', async (req, res) => {
         
         if (!user.password) {
             return res.status(400).json({ message: 'This account was created without a password. Please contact support.' });
+        }
+
+        if (!user.isVerified && !user.googleId) {
+            // Need to resend OTP and ask them to verify
+            const otp = generateOTP();
+            user.verificationOTP = otp;
+            user.verificationOTPExpire = Date.now() + 10 * 60 * 1000;
+            await user.save();
+
+            await sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
+            
+            return res.status(400).json({ message: 'Email not verified. A new OTP has been sent to your email.', unverified: true });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
@@ -78,6 +163,55 @@ router.post('/login', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error during login' });
+    }
+});
+
+// @route   POST /api/auth/forgot-password
+// @desc    Send OTP to reset password
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    try {
+        let user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: 'User not found with this email.' });
+
+        const otp = generateOTP();
+        user.resetPasswordOTP = otp;
+        user.resetPasswordOTPExpire = Date.now() + 10 * 60 * 1000;
+        await user.save();
+
+        await sendMail(email, "Reset Your Password - Lost & Found Hub", `Your password reset OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your password reset OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
+
+        res.json({ message: 'Password reset OTP sent to your email.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error during forgot password' });
+    }
+});
+
+// @route   POST /api/auth/reset-password
+// @desc    Reset password using OTP
+router.post('/reset-password', async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+    try {
+        if (!newPassword || newPassword.length < 6) return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+
+        let user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: 'User not found.' });
+
+        if (user.resetPasswordOTP !== otp || user.resetPasswordOTPExpire < Date.now()) {
+            return res.status(400).json({ message: 'Invalid or expired OTP.' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+        user.resetPasswordOTP = undefined;
+        user.resetPasswordOTPExpire = undefined;
+        await user.save();
+
+        res.json({ message: 'Password reset successfully. You can now login.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error during reset password' });
     }
 });
 
@@ -117,12 +251,14 @@ router.post('/google-login', async (req, res) => {
                 email,
                 name,
                 googleId: sub,
-                profilePicture: picture
+                profilePicture: picture,
+                isVerified: true
             });
             await user.save();
         } else if (!user.googleId) {
             // If user exists via email registration but now logs in via Google
             user.googleId = sub;
+            user.isVerified = true;
             if (!user.profilePicture) user.profilePicture = picture;
             await user.save();
         }

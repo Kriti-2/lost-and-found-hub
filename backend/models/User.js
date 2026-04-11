@@ -4,8 +4,7 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
-        match: [/^[a-zA-Z0-9._%+-]+@(srmist\.edu\.in|gmail\.com)$/, 'Please use a valid SRM or Gmail ID']
+        unique: true
     },
     googleId: {
         type: String,
@@ -23,6 +22,14 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
+    verificationOTP: String,
+    verificationOTPExpire: Date,
+    resetPasswordOTP: String,
+    resetPasswordOTPExpire: Date,
     institution: {
         type: String,
         default: 'SRMIST'

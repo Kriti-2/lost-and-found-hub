@@ -1,9 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import ItemCard from '../components/ItemCard';
 import { Layers, CheckCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
+import lostIllustration from '../assets/illustrations/lost_item.png';
+import foundIllustration from '../assets/illustrations/found_item.png';
 
 const Dashboard = () => {
     const { user } = useContext(AuthContext);
@@ -59,6 +62,42 @@ const Dashboard = () => {
                     <p style={{ color: 'var(--color-text-light)', display: 'flex', alignItems: 'center', gap: '5px' }}>
                         <CheckCircle size={16} color="#2e7d32" /> Verified {user.email}
                     </p>
+                </div>
+            </div>
+
+            {/* Quick Action Banner Cards */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '40px' }}>
+                
+                {/* Lost Item Card */}
+                <div className="interactive-card" style={{ backgroundColor: '#FFF0EA', borderRadius: '16px', padding: '25px', display: 'flex', alignItems: 'center', gap: '30px' }}>
+                    <div style={{ filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.1))', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <img src={lostIllustration} alt="Lost Item" style={{ width: '150px', height: '150px', objectFit: 'contain', borderRadius: '12px' }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={{ color: '#2C3E50', fontSize: '1.5rem', marginBottom: '8px' }}>Lost an Item?</h3>
+                        <p style={{ color: '#546E7A', fontSize: '1.05rem', margin: 0, maxWidth: '80%' }}>You can Post a lost item here for easy recovery</p>
+                        <div style={{ textAlign: 'right', marginTop: '10px' }}>
+                            <Link to="/create" style={{ display: 'inline-block', border: '2px solid #FFB74D', color: '#F57C00', background: 'transparent', padding: '8px 24px', borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', textDecoration: 'none', transition: 'all 0.2s' }}>
+                                Post It
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Found Item Card */}
+                <div className="interactive-card" style={{ backgroundColor: '#FFFDF0', borderRadius: '16px', padding: '25px', display: 'flex', alignItems: 'center', gap: '30px' }}>
+                    <div style={{ filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.1))', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <img src={foundIllustration} alt="Found Item" style={{ width: '150px', height: '150px', objectFit: 'contain', borderRadius: '12px' }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={{ color: '#2C3E50', fontSize: '1.5rem', marginBottom: '8px' }}>Found an Item?</h3>
+                        <p style={{ color: '#546E7A', fontSize: '1.05rem', margin: 0, maxWidth: '80%' }}>Post a found item for easy reach by the owner</p>
+                        <div style={{ textAlign: 'right', marginTop: '10px' }}>
+                            <Link to="/create" style={{ display: 'inline-block', border: '2px solid #81C784', color: '#4CAF50', background: 'transparent', padding: '8px 24px', borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', textDecoration: 'none', transition: 'all 0.2s' }}>
+                                Post It
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </div>
 

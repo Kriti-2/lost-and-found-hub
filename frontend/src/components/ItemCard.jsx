@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Calendar, Tag } from 'lucide-react';
-import { IMAGE_BASE_URL } from '../utils/api';
+import { MapPin, Calendar, Tag, AlertTriangle } from 'lucide-react';
+import api, { IMAGE_BASE_URL } from '../utils/api';
+import { toast } from 'react-toastify';
 
 const ItemCard = ({ item }) => {
     
@@ -10,13 +11,24 @@ const ItemCard = ({ item }) => {
         return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
+    const handleReport = async () => {
+        if (!window.confirm("Are you sure you want to report this item? It will be reviewed by our system.")) return;
+        try {
+            await api.post(`/items/${item._id}/report`);
+            toast.success("Item reported successfully. Thank you for keeping our hub safe!");
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to report item");
+        }
+    };
+
     return (
-        <div className="glass-card animate-fade-in" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%', transition: 'transform 0.3s ease' }}>
+        <div className="glass-card animate-fade-in interactive-card" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
             <div style={{ height: '200px', backgroundColor: 'var(--color-bg)', position: 'relative' }}>
                 {item.image ? (
                     <img 
                         src={`${IMAGE_BASE_URL}${item.image}`} 
                         alt={item.name} 
+                        className="card-img-zoom"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                     />
                 ) : (
@@ -24,6 +36,15 @@ const ItemCard = ({ item }) => {
                         <Tag size={48} opacity={0.5} />
                     </div>
                 )}
+                
+                <button 
+                    onClick={handleReport}
+                    style={{ position: 'absolute', top: '10px', left: '10px', background: 'rgba(255,255,255,0.7)', border: 'none', borderRadius: '50%', padding: '6px', color: '#d32f2f', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s' }} 
+                    title="Report Suspicious Item"
+                    className="hover-lift"
+                >
+                    <AlertTriangle size={18} />
+                </button>
                 
                 <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
                     <span className={`badge ${item.status === 'Lost' ? 'badge-lost' : item.status === 'Found' ? 'badge-found' : 'badge-returned'}`}>

@@ -39,6 +39,17 @@ const Home = () => {
         <div className="app-container" style={{ padding: '40px 20px' }}>
             {/* Hero Section */}
             <div className="glass-card animate-fade-in" style={{ padding: '40px', marginBottom: '40px', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
+                
+                {/* Floating Aesthetic Elements */}
+                <div style={{ position: 'absolute', right: '15%', top: '10%', opacity: 0.25, fontSize: '4.5rem', animation: 'float 6s ease-in-out infinite' }}>🔑</div>
+                <div style={{ position: 'absolute', right: '5%', bottom: '20%', opacity: 0.2, fontSize: '5rem', animation: 'float 8s ease-in-out infinite reverse' }}>📱</div>
+                <div style={{ position: 'absolute', right: '25%', bottom: '15%', opacity: 0.15, fontSize: '3.5rem', animation: 'float 10s ease-in-out infinite' }}>⌚</div>
+                <div style={{ position: 'absolute', right: '40%', top: '5%', opacity: 0.2, fontSize: '3rem', animation: 'float 7s ease-in-out infinite reverse' }}>👓</div>
+                
+                {/* Soft glowing blob inside the hero */}
+                <div style={{ position: 'absolute', right: '-10%', top: '-20%', width: '400px', height: '400px', background: 'radial-gradient(circle, var(--color-secondary) 0%, rgba(255,255,255,0) 70%)', opacity: 0.6, zIndex: 0, borderRadius: '50%' }}></div>
+                <div style={{ position: 'absolute', right: '10%', bottom: '-30%', width: '350px', height: '350px', background: 'radial-gradient(circle, var(--color-tertiary) 0%, rgba(255,255,255,0) 70%)', opacity: 0.4, zIndex: 0, borderRadius: '50%' }}></div>
+
                 <div style={{ maxWidth: '600px', position: 'relative', zIndex: 2 }}>
                     <h1 style={{ fontSize: '2.5rem', marginBottom: '15px' }}>Recover What's Yours. <br/><span style={{ color: 'var(--color-tertiary)' }}>Help Others Find Theirs.</span></h1>
                     <p style={{ fontSize: '1.1rem', color: 'var(--color-text-light)', marginBottom: '30px' }}>
@@ -95,9 +106,18 @@ const Home = () => {
 
             {/* Grid */}
             {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '50px', color: 'var(--color-primary)' }}>
-                    <Loader className="animate-spin" size={40} style={{ animation: 'spin 1s linear infinite' }} />
-                    <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '30px' }}>
+                    {[1, 2, 3, 4, 5, 6].map(i => (
+                        <div key={i} className="glass-card interactive-card" style={{ height: '350px', padding: '0', display: 'flex', flexDirection: 'column' }}>
+                            <div className="skeleton" style={{ height: '200px', width: '100%', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0' }}></div>
+                            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                                <div className="skeleton" style={{ height: '28px', width: '70%', marginBottom: '15px', borderRadius: '4px' }}></div>
+                                <div className="skeleton" style={{ height: '16px', width: '100%', marginBottom: '8px', borderRadius: '4px' }}></div>
+                                <div className="skeleton" style={{ height: '16px', width: '80%', marginBottom: 'auto', borderRadius: '4px' }}></div>
+                                <div className="skeleton" style={{ height: '40px', width: '100%', borderRadius: 'var(--radius-full)', marginTop: '20px' }}></div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             ) : items.length === 0 ? (
                 <div className="glass-card" style={{ padding: '50px', textAlign: 'center', color: 'var(--color-text-light)' }}>

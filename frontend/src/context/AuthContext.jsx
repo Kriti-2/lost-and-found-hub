@@ -32,22 +32,76 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', res.data.token);
             setUser(res.data.user);
             toast.success("Successfully logged in!");
-            return true;
+            return { success: true };
         } catch (err) {
             toast.error(err.response?.data?.message || "Login failed");
-            return false;
+            if (err.response?.data?.unverified) {
+                return { success: false, unverified: true };
+            }
+            return { success: false };
         }
     };
 
     const registerAccount = async (email, name, password) => {
         try {
             const res = await api.post('/auth/register', { email, name, password });
-            localStorage.setItem('token', res.data.token);
-            setUser(res.data.user);
-            toast.success("Account created successfully!");
-            return true;
+            if (res.data.requiresVerification) {
+                toast.success(res.data.message);
+                return { success: true, requiresVerification: true };
+            } else {
+                localStorage.setItem('token', res.data.token);
+                setUser(res.data.user);
+                toast.success("Account created successfully!");
+                return { success: true };
+            }
         } catch (err) {
             toast.error(err.response?.data?.message || "Registration failed");
+            return { success: false };
+        }
+    };
+
+    const verifyEmail = async (email, otp) => {
+        try {
+            const res = await api.post('/auth/verify-email', { email, otp });
+            localStorage.setItem('token', res.data.token);
+            setUser(res.data.user);
+            toast.success(res.data.message);
+            return true;
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Verification failed");
+            return false;
+        }
+    };
+
+    const resendVerificationOTP = async (email) => {
+        try {
+            const res = await api.post('/auth/resend-verification', { email });
+            toast.success(res.data.message);
+            return true;
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to resend OTP");
+            return false;
+        }
+    };
+
+    const forgotPassword = async (email) => {
+        try {
+            const res = await api.post('/auth/forgot-password', { email });
+            toast.success(res.data.message);
+            return true;
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to send reset OTP");
+            return false;
+        }
+    };
+
+    const resetPassword = async (email, otp, newPassword) => {
+        try {
+            const res = await api.post('/auth/reset-password', { email, otp, newPassword });
+            toast.success(res.data.message);
+            return true;
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Password reset failed");
             return false;
         }
     };
@@ -100,7 +154,11 @@ export const AuthProvider = ({ children }) => {
             logout, 
             loading,
             markNotificationsAsRead,
-            deleteNotification
+            deleteNotification,
+            verifyEmail,
+            resendVerificationOTP,
+            forgotPassword,
+            resetPassword
         }}>
             {children}
         </AuthContext.Provider>

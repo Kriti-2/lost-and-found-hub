@@ -41,7 +41,15 @@ const ItemSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    claims: [ClaimSchema]
+    claims: [ClaimSchema],
+    reports: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    isHidden: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Item', ItemSchema);
