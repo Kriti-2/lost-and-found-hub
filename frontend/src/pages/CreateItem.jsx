@@ -60,41 +60,6 @@ const CreateItem = () => {
         }
     };
 
-    const videoRef = React.useRef(null);
-    const [showWebcam, setShowWebcam] = useState(false);
-
-    const startWebcam = async () => {
-        setShowWebcam(true);
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            if (videoRef.current) videoRef.current.srcObject = stream;
-        } catch (err) {
-            toast.error("Camera access denied or unavailable");
-            setShowWebcam(false);
-        }
-    };
-
-    const capturePhoto = () => {
-        if (!videoRef.current) return;
-        const canvas = document.createElement('canvas');
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
-        canvas.getContext('2d').drawImage(videoRef.current, 0, 0);
-        
-        canvas.toBlob((blob) => {
-            const file = new File([blob], "webcam_capture.jpg", { type: "image/jpeg" });
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
-            stopWebcam();
-        }, 'image/jpeg');
-    };
-
-    const stopWebcam = () => {
-        if (videoRef.current && videoRef.current.srcObject) {
-            videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-        }
-        setShowWebcam(false);
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -209,15 +174,7 @@ const CreateItem = () => {
                                 style={{ display: 'none' }}
                             />
                             
-                            {showWebcam ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                    <video ref={videoRef} autoPlay playsInline style={{ width: '100%', maxWidth: '400px', borderRadius: '8px', marginBottom: '15px', backgroundColor: '#000' }}></video>
-                                    <div style={{ display: 'flex', gap: '15px' }}>
-                                        <button type="button" onClick={stopWebcam} className="btn btn-outline" style={{ borderColor: '#d32f2f', color: '#d32f2f' }}>Cancel</button>
-                                        <button type="button" onClick={capturePhoto} className="btn btn-primary" style={{ backgroundColor: '#2e7d32', borderColor: '#2e7d32', display: 'flex', alignItems: 'center' }}><Camera size={18} style={{ marginRight: '8px' }} /> Capture Photo</button>
-                                    </div>
-                                </div>
-                            ) : imagePreview ? (
+                            {imagePreview ? (
                                 <div>
                                     <img src={imagePreview} alt="Preview" style={{ maxHeight: '200px', borderRadius: '8px', margin: '0 auto 15px' }} />
                                     <div>
@@ -230,7 +187,7 @@ const CreateItem = () => {
                                         <button type="button" onClick={() => document.getElementById('fileInput').click()} style={{ background: 'transparent', border: '2px solid var(--color-primary)', borderRadius: '50%', width: '64px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--color-primary)', transition: '0.2s', boxShadow: 'var(--shadow-sm)' }}>
                                             <Upload size={28} />
                                         </button>
-                                        <button type="button" onClick={startWebcam} style={{ background: 'var(--color-primary)', border: 'none', borderRadius: '50%', width: '64px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white', transition: '0.2s', boxShadow: 'var(--shadow-md)' }}>
+                                        <button type="button" onClick={() => document.getElementById('cameraInput').click()} style={{ background: 'var(--color-primary)', border: 'none', borderRadius: '50%', width: '64px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white', transition: '0.2s', boxShadow: 'var(--shadow-md)' }}>
                                             <Camera size={28} />
                                         </button>
                                     </div>
