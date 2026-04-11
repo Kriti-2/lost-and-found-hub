@@ -36,9 +36,9 @@ const Home = () => {
     };
 
     return (
-        <div className="app-container" style={{ padding: '40px 20px' }}>
+        <div className="app-container" style={{ padding: '40px 0' }}>
             {/* Hero Section */}
-            <div className="glass-card animate-fade-in" style={{ padding: '40px', marginBottom: '40px', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
+            <div className="glass-card animate-fade-in" style={{ padding: '40px 20px', marginBottom: '40px', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
                 
                 {/* Floating Aesthetic Elements */}
                 <div style={{ position: 'absolute', right: '15%', top: '10%', opacity: 0.25, fontSize: '4.5rem', animation: 'float 6s ease-in-out infinite' }}>🔑</div>
@@ -74,11 +74,11 @@ const Home = () => {
             </div>
 
             {/* Filters Section */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
+            <div className="mobile-flex-col" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
                 <h2 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <Filter size={24} /> Discovery Hub
                 </h2>
-                <div style={{ display: 'flex', gap: '15px' }}>
+                <div className="mobile-wrap" style={{ display: 'flex', gap: '15px' }}>
                     <select 
                         className="input-field" 
                         value={typeFilter} 

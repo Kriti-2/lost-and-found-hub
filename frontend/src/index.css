@@ -350,3 +350,57 @@ a {
   background-color: rgba(155, 142, 199, 0.4);
   border-radius: 10px;
 }
+
+/* ------------------------------------- */
+/* Mobile Responsiveness                 */
+/* ------------------------------------- */
+@media (max-width: 768px) {
+  /* Scale down container padding */
+  .app-container {
+    padding: 0 15px !important;
+  }
+  
+  /* Shrink heading text */
+  h1 { font-size: 2rem !important; }
+  h2 { font-size: 1.5rem !important; }
+  h3 { font-size: 1.25rem !important; }
+  
+  /* Adjust blob size and position to prevent overflow */
+  .bg-blob-1 {
+    width: 200px;
+    height: 200px;
+    top: -50px;
+    right: -50px;
+  }
+  .bg-blob-2 {
+    width: 250px;
+    height: 250px;
+    bottom: -50px;
+    left: -50px;
+  }
+  
+  /* Buttons can be slightly more compact */
+  .btn {
+    padding: 8px 18px;
+    font-size: 0.9rem;
+  }
+  
+  /* Adjust specific elements via their inline-style equivalents if needed,
+     or provide utility overrides */
+  .mobile-flex-col {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  .mobile-nav-hide {
+    display: none !important;
+  }
+  .mobile-wrap {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+  .mobile-text-center {
+    text-align: center !important;
+  }
+}
+

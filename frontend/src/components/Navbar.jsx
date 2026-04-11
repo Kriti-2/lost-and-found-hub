@@ -30,11 +30,11 @@ const Navbar = () => {
                     <div style={{ background: 'var(--color-primary)', color: 'white', padding: '8px', borderRadius: '12px' }}>
                         <Package size={24} />
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--color-heading)' }}>Lost & Found Hub</h2>
+                    <h2 className="mobile-nav-hide" style={{ margin: 0, fontSize: '1.5rem', color: 'var(--color-heading)' }}>Lost & Found Hub</h2>
                 </Link>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                    <Link to="/" style={{ fontWeight: 500 }} className="hover-underline">Explore</Link>
+                    <Link to="/" style={{ fontWeight: 500 }} className="hover-underline mobile-nav-hide">Explore</Link>
                     
                     {user ? (
                         <>
@@ -93,7 +93,7 @@ const Navbar = () => {
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', borderLeft: '1px solid rgba(0,0,0,0.1)', paddingLeft: '15px' }}>
                                 <Link to="/dashboard" className="hover-underline" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500 }}>
-                                    <User size={18} /> {user.name}
+                                    <User size={18} /> <span className="mobile-nav-hide">{user.name}</span>
                                 </Link>
                                 <button onClick={handleLogout} className="btn-outline" style={{ padding: '6px 12px', border: 'none', color: '#d32f2f' }}>
                                     <LogOut size={18} />
