@@ -169,7 +169,14 @@ const AdminPanel = () => {
                             {itemsList.map((item) => (
                                 <tr key={item._id} style={{ borderBottom: '1px solid rgba(0,0,0,0.05)', background: item.isHidden ? '#fff3e0' : 'transparent' }}>
                                     <td style={{ padding: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                        {item.image && <img src={item.image.startsWith('http') ? item.image : `${IMAGE_BASE_URL}${item.image.startsWith('/') ? item.image.substring(1) : item.image}`} alt={item.name} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px' }} />}
+                                        {item.image && (
+                                            <img 
+                                                src={item.image.startsWith('http') ? item.image : `${IMAGE_BASE_URL}${item.image.startsWith('/') ? item.image.substring(1) : item.image}`} 
+                                                alt={item.name} 
+                                                style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px' }} 
+                                                onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/40x40/f3f4f6/a8a29e?text=X'; }}
+                                            />
+                                        )}
                                         <div style={{ width: '150px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={item.name}>{item.name}</div>
                                     </td>
                                     <td style={{ padding: '15px' }}>

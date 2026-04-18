@@ -1,43 +1,28 @@
 const multer = require('multer');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
-const fs = require('fs');
-
-const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Set storage engine
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-    }
+// Configure Cloudinary with credentials from .env
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Check File Type
-function checkFileType(file, cb) {
-    const filetypes = /jpeg|jpg|png|gif|webp|avif/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
+// Set up Cloudinary storage for Multer
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'lost_and_found_hub', // The folder name in your Cloudinary account
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'avif', 'gif'],
+    transformation: [{ width: 1000, height: 1000, crop: 'limit' }] // Optimize size automatically
+  }
+});
 
-    if (mimetype && extname) {
-        return cb(null, true);
-    } else {
-        cb(new Error('Images Only! Allowed types: jpeg, jpg, png, gif, webp, avif'));
-    }
-}
-
-// Init Upload
-const upload = multer({
+// Initialize Multer with Cloudinary
+const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 5000000 }, // 5MB limit
-    fileFilter: function (req, file, cb) {
-        checkFileType(file, cb);
-    }
+    limits: { fileSize: 5000000 } // 5MB limit
 });
 
 module.exports = upload;

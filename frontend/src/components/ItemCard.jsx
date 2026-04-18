@@ -29,7 +29,11 @@ const ItemCard = ({ item }) => {
                         src={item.image.startsWith('http') ? item.image : `${IMAGE_BASE_URL}${item.image.startsWith('/') ? item.image.substring(1) : item.image}`} 
                         alt={item.name} 
                         className="card-img-zoom"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => {
+                            e.target.onerror = null; // prevents looping
+                            e.target.src = 'https://placehold.co/600x400/f3f4f6/a8a29e?text=Image+Unavailable';
+                        }}
                     />
                 ) : (
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-tertiary)' }}>

@@ -54,7 +54,7 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
         
         let imageUrl = '';
         if (req.file) {
-            imageUrl = `/uploads/${req.file.filename}`;
+            imageUrl = req.file.path;
         }
 
         const newItem = new Item({
@@ -145,7 +145,7 @@ router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
         item.status = status || item.status;
 
         if (req.file) {
-            item.image = `/uploads/${req.file.filename}`;
+            item.image = req.file.path;
         }
 
         const updatedItem = await item.save();
