@@ -70,7 +70,7 @@ const Dashboard = () => {
                         WebkitTextFillColor: 'transparent',
                         display: 'inline-block'
                     }}>
-                        {user.name.split(' ')[0].trim()}'s Workspace
+                        {user.name.split(' ')[0].trim()}
                     </h1>
                     <p style={{ color: 'var(--color-text-light)', display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', wordBreak: 'break-all' }}>
                         <CheckCircle size={16} color="#2e7d32" flexShrink={0} /> <span>Verified <strong>{user.email}</strong></span>
