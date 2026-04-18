@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api, { IMAGE_BASE_URL } from '../utils/api';
 import { toast } from 'react-toastify';
-import { Upload, Save, ArrowLeft, Camera } from 'lucide-react';
+import { Upload, Save, ArrowLeft, Camera, ShieldAlert } from 'lucide-react';
+import * as nsfwjs from 'nsfwjs';
+import * as tf from '@tensorflow/tfjs';
 
 const CreateItem = () => {
     const { id } = useParams();
@@ -64,6 +66,33 @@ const CreateItem = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        // Security Check: Block Obscene/NSFW Imagery
+        if (imageFile) {
+            try {
+                toast.info("Security scanning image content...");
+                const img = new Image();
+                img.src = imagePreview;
+                await new Promise((resolve) => { img.onload = resolve; });
+
+                const model = await nsfwjs.load();
+                const predictions = await model.classify(img);
+                
+                // Identify high-risk categories (Porn, Hentai, Sexy)
+                const nsfwFound = predictions.some(p => 
+                    (p.className === 'Porn' || p.className === 'Hentai' || p.className === 'Sexy') && p.probability > 0.6
+                );
+
+                if (nsfwFound) {
+                    toast.error("Security Warning: This image is inappropriate and was blocked.");
+                    setLoading(false);
+                    return;
+                }
+            } catch (scanError) {
+                console.error("Content scan failed", scanError);
+                // We proceed if there's a weird scan error, but warn the dev
+            }
+        }
 
         const data = new FormData();
         Object.keys(formData).forEach(key => {
