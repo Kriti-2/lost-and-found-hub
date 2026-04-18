@@ -16,9 +16,9 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 // @desc    Register a new user
 router.post('/register', async (req, res) => {
     const { email, name, password } = req.body;
-    
+
     // Removed srmist check
-    
+
     if (!password || password.length < 6) {
         return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
     }
@@ -33,7 +33,7 @@ router.post('/register', async (req, res) => {
                 // User exists but not verified, resend OTP & update pass
                 const salt = await bcrypt.genSalt(10);
                 const hashedPassword = await bcrypt.hash(password, salt);
-                
+
                 const otp = generateOTP();
                 user.verificationOTP = otp;
                 user.verificationOTPExpire = Date.now() + 10 * 60 * 1000;
@@ -51,9 +51,9 @@ router.post('/register', async (req, res) => {
 
         const otp = generateOTP();
 
-        user = new User({ 
-            email, 
-            name, 
+        user = new User({
+            email,
+            name,
             password: hashedPassword,
             verificationOTP: otp,
             verificationOTPExpire: Date.now() + 10 * 60 * 1000
@@ -125,7 +125,7 @@ router.post('/resend-verification', async (req, res) => {
 // @desc    Login existing user
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    
+
     // Removed srmist check
 
     try {
@@ -134,7 +134,7 @@ router.post('/login', async (req, res) => {
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials. Have you registered?' });
         }
-        
+
         if (!user.password) {
             return res.status(400).json({ message: 'This account was created without a password. Please contact support.' });
         }
@@ -147,7 +147,7 @@ router.post('/login', async (req, res) => {
             await user.save();
 
             await sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
-            
+
             return res.status(400).json({ message: 'Email not verified. A new OTP has been sent to your email.', unverified: true });
         }
 

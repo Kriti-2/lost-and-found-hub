@@ -111,7 +111,7 @@ const CreateItem = () => {
                 <h2 style={{ marginBottom: '30px' }}>{isEditMode ? 'Edit Item Listing' : 'Create New Listing'}</h2>
                 
                 <form onSubmit={handleSubmit}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                         <div className="input-group">
                             <label className="input-label">Listing Type</label>
                             <select name="type" value={formData.type} onChange={handleChange} className="input-field" required>
@@ -142,7 +142,7 @@ const CreateItem = () => {
                         <textarea name="description" value={formData.description} onChange={handleChange} className="input-field" rows="4" placeholder="Provide detailed identifiers like colors, scratches, inner contents..." required></textarea>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
                         <div className="input-group">
                             <label className="input-label">Location (Lost/Found)</label>
                             <input name="location" value={formData.location} onChange={handleChange} className="input-field" placeholder="e.g., Library 2nd Floor, Canteen" required />

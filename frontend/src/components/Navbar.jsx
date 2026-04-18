@@ -38,8 +38,8 @@ const Navbar = () => {
                     
                     {user ? (
                         <>
-                            <Link to="/create" className="btn" style={{ padding: '8px 16px', background: 'linear-gradient(135deg, #61509D, #4a3b78)', color: 'white', boxShadow: '0 4px 15px rgba(97, 80, 157, 0.4)' }}>
-                                <PlusCircle size={18} /> Post Item
+                            <Link to="/create" className="btn btn-post" style={{ padding: '8px 16px', background: 'linear-gradient(135deg, #61509D, #4a3b78)', color: 'white', boxShadow: '0 4px 15px rgba(97, 80, 157, 0.4)' }}>
+                                <PlusCircle size={18} /> <span className="mobile-nav-hide" style={{ marginLeft: '6px' }}>Post Item</span>
                             </Link>
 
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginLeft: '10px', gap: '15px' }}>
@@ -58,7 +58,7 @@ const Navbar = () => {
                                 </button>
                                 
                                 {showNotifications && (
-                                    <div style={{ position: 'absolute', top: '40px', right: '-80px', width: '320px', background: 'white', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', padding: '15px', zIndex: 1000, maxHeight: '400px', overflowY: 'auto' }}>
+                                    <div className="notif-dropdown" style={{ position: 'absolute', top: '40px', right: '0px', width: '320px', maxWidth: 'calc(100vw - 40px)', background: 'white', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', padding: '15px', zIndex: 1000, maxHeight: '400px', overflowY: 'auto' }}>
                                         <h4 style={{ margin: '0 0 10px 0', borderBottom: '1px solid #eee', paddingBottom: '10px', color: 'var(--color-primary)' }}>Your Inbox</h4>
                                         {(!user?.notifications || user.notifications.length === 0) ? (
                                             <p style={{ fontSize: '0.85rem', color: '#666', textAlign: 'center', margin: '20px 0' }}>No messages yet.</p>
@@ -113,6 +113,10 @@ const Navbar = () => {
             <style>{`
                 .hover-link:hover { color: var(--color-primary); }
                 .delete-notif-btn:hover { color: #d32f2f !important; }
+                @media (max-width: 768px) {
+                    .btn-post { padding: 8px !important; }
+                    .notif-dropdown { right: -60px !important; }
+                }
             `}</style>
         </nav>
     );

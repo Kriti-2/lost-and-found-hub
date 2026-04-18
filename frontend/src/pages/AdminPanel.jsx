@@ -119,7 +119,7 @@ const AdminPanel = () => {
 
             <div className="glass-card" style={{ padding: '20px', overflowX: 'auto' }}>
                 {activeTab === 'users' ? (
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '700px' }}>
                         <thead>
                             <tr style={{ background: 'rgba(155, 142, 199, 0.2)', textAlign: 'left' }}>
                                 <th style={{ padding: '15px' }}>Name</th>
@@ -155,7 +155,7 @@ const AdminPanel = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '700px' }}>
                         <thead>
                             <tr style={{ background: 'rgba(155, 142, 199, 0.2)', textAlign: 'left' }}>
                                 <th style={{ padding: '15px' }}>Item</th>
