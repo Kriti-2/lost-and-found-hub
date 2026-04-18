@@ -64,9 +64,27 @@ const Inbox = () => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [selectedChat?.messages]);
 
+    // Handle mobile browser/hardware back button gracefully
+    useEffect(() => {
+        const handlePopState = (e) => {
+            if (selectedChat) {
+                // Intercept the back button and close the chat instead of leaving the page
+                setSelectedChat(null);
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [selectedChat]);
+
     const selectChat = (chat) => {
         setSelectedChat(chat);
         socket.emit("join_room", chat._id);
+        
+        // Push a state to the history stack so the hardware back button has something to pop
+        if (window.innerWidth < 768) {
+            window.history.pushState({ chatOpen: true }, '');
+        }
     };
 
     const sendMessage = async (e) => {
@@ -173,7 +191,13 @@ const Inbox = () => {
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', background: 'rgba(255,255,255,0.1)' }}>
                     {/* Chat Header */}
                     <div style={{ padding: '15px 20px', borderBottom: '1px solid rgba(155, 142, 199, 0.2)', display: 'flex', alignItems: 'center', gap: '15px', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', zIndex: 10 }}>
-                        <button onClick={() => setSelectedChat(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: window.innerWidth < 768 ? 'flex' : 'none', color: 'var(--color-heading)', padding: '5px', borderRadius: '50%', backgroundColor: 'rgba(155,142,199,0.1)' }}>
+                        <button onClick={() => {
+                            if (window.innerWidth < 768) {
+                                window.history.back(); // Pops the state we pushed, triggering popstate event -> setSelectedChat(null)
+                            } else {
+                                setSelectedChat(null);
+                            }
+                        }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: window.innerWidth < 768 ? 'flex' : 'none', color: 'var(--color-heading)', padding: '5px', borderRadius: '50%', backgroundColor: 'rgba(155,142,199,0.1)' }}>
                             <ArrowLeft size={22} />
                         </button>
                         <div style={{ width: '45px', height: '45px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-primary), var(--color-tertiary))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', boxShadow: '0 4px 10px rgba(97, 80, 157, 0.3)' }}>
