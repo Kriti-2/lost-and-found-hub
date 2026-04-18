@@ -113,11 +113,19 @@ const Inbox = () => {
         <div className="glass-card animate-fade-in" style={{ display: 'flex', height: 'calc(100vh - 120px)', gap: '0px', maxWidth: '1200px', margin: '20px auto', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.7)', position: 'relative' }}>
             
             {/* Sidebar */}
-            <div style={{ width: window.innerWidth < 768 ? '100%' : '35%', minWidth: '300px', borderRight: '1px solid rgba(155, 142, 199, 0.2)', display: selectedChat && window.innerWidth < 768 ? 'none' : 'flex', flexDirection: 'column', background: 'rgba(255, 255, 255, 0.4)' }}>
-                <div style={{ padding: '25px', borderBottom: '1px solid rgba(155, 142, 199, 0.2)' }}>
-                    <h2 style={{ margin: 0, fontSize: '1.4rem', background: 'linear-gradient(135deg, var(--color-primary), var(--color-heading))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>My Messages</h2>
+            <div style={{ position: 'relative', width: window.innerWidth < 768 ? '100%' : '35%', minWidth: '300px', borderRight: '1px solid rgba(155, 142, 199, 0.2)', display: selectedChat && window.innerWidth < 768 ? 'none' : 'flex', flexDirection: 'column', background: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(10px)', overflow: 'hidden' }}>
+                
+                {/* Artistic background blobs for the sidebar */}
+                <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '250px', height: '250px', background: 'radial-gradient(circle, rgba(97, 80, 157, 0.15) 0%, rgba(255,255,255,0) 70%)', borderRadius: '50%', zIndex: 0, pointerEvents: 'none' }}></div>
+                <div style={{ position: 'absolute', bottom: '10%', right: '-15%', width: '250px', height: '250px', background: 'radial-gradient(circle, rgba(232, 62, 140, 0.1) 0%, rgba(255,255,255,0) 70%)', borderRadius: '50%', zIndex: 0, pointerEvents: 'none' }}></div>
+
+                <div style={{ padding: '25px', borderBottom: '1px solid rgba(155, 142, 199, 0.1)', position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '40px', height: '40px', background: 'linear-gradient(135deg, #61509D, #E83E8C)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 4px 10px rgba(97,80,157,0.3)', transform: 'rotate(-5deg)' }}>
+                        <MessageSquare size={20} />
+                    </div>
+                    <h2 style={{ margin: 0, fontSize: '1.6rem', background: 'linear-gradient(135deg, var(--color-primary), var(--color-heading))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 900, letterSpacing: '-0.5px' }}>My Messages</h2>
                 </div>
-                <div className="chat-scroll" style={{ overflowY: 'auto', flex: 1 }}>
+                <div className="chat-scroll" style={{ overflowY: 'auto', flex: 1, padding: '15px 0', position: 'relative', zIndex: 1 }}>
                     {chats.length === 0 ? (
                         <div style={{ padding: '30px', textAlign: 'center', color: 'var(--color-text-light)' }}>No active chats yet.</div>
                     ) : (
@@ -129,15 +137,25 @@ const Inbox = () => {
                                 <div 
                                     key={chat._id} 
                                     onClick={() => selectChat(chat)}
-                                    className={`chat-list-item ${isSelected ? 'selected' : ''}`}
-                                    style={{ padding: '18px 25px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.5)' }}
+                                    className={`chat-list-item interactive-card ${isSelected ? 'selected' : ''}`}
+                                    style={{ 
+                                        margin: '0 15px 12px 15px', 
+                                        padding: '16px', 
+                                        cursor: 'pointer', 
+                                        background: isSelected ? 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,1))' : 'rgba(255,255,255,0.5)', 
+                                        borderRadius: '16px', 
+                                        boxShadow: isSelected ? '0 8px 20px rgba(97,80,157,0.12)' : '0 2px 8px rgba(0,0,0,0.02)',
+                                        border: isSelected ? '1px solid rgba(97,80,157,0.4)' : '1px solid rgba(155,142,199,0.15)',
+                                        position: 'relative',
+                                        transition: 'all 0.3s ease'
+                                    }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                                        <div style={{ width: '45px', height: '45px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-primary), var(--color-tertiary))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.1rem', boxShadow: '0 4px 10px rgba(155,142,199,0.3)' }}>
+                                        <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--color-primary), var(--color-tertiary))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(155,142,199,0.3)', flexShrink: 0 }}>
                                             {(otherUser?.name?.[0] || '?').toUpperCase()}
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
-                                            <h4 style={{ margin: '0 0 5px 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: isSelected ? '700' : '500' }}>{otherUser?.name || 'Unknown User'}</h4>
+                                            <h4 style={{ margin: '0 0 5px 0', fontSize: '1.05rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: isSelected ? '800' : '600', color: '#2C3E50' }}>{otherUser?.name || 'Unknown User'}</h4>
                                             <p style={{ margin: 0, fontSize: '0.85rem', color: isSelected ? 'var(--color-primary)' : 'var(--color-text-light)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {chat.item?.name || 'Deleted Item'}
                                             </p>
