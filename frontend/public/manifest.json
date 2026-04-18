@@ -1,0 +1,16 @@
+{
+  "name": "Lost & Found Hub",
+  "short_name": "Lost&Found",
+  "description": "The official, secure Lost & Found system for SRMIST.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F2EAE0",
+  "theme_color": "#61509D",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
