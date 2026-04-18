@@ -22,8 +22,8 @@ const ItemCard = ({ item }) => {
     };
 
     return (
-        <div className="glass-card animate-fade-in interactive-card" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
-            <div style={{ aspectRatio: '4/3', width: '100%', backgroundColor: 'var(--color-bg)', position: 'relative' }}>
+        <div className="glass-card animate-fade-in interactive-card" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', padding: 0 }}>
+            <div style={{ aspectRatio: '1 / 1', width: '100%', backgroundColor: 'var(--color-bg)', position: 'relative', flexShrink: 0, overflow: 'hidden' }}>
                 {item.image ? (
                     <img 
                         src={item.image.startsWith('http') ? item.image : `${IMAGE_BASE_URL}${item.image.startsWith('/') ? item.image.substring(1) : item.image}`} 
@@ -62,23 +62,22 @@ const ItemCard = ({ item }) => {
                 </div>
             </div>
             
-            <div style={{ padding: '12px 15px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ marginBottom: '6px', fontSize: '1.1rem', lineHeight: 1.2 }}>{item.name}</h3>
-                <p style={{ color: 'var(--color-text-light)', fontSize: '0.85rem', marginBottom: '10px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.4 }}>
-                    {item.description}
-                </p>
+            <div style={{ padding: '12px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ margin: '0 0 6px 0', fontSize: '1rem', lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--color-heading)' }}>{item.name}</h3>
                 
-                <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '5px', fontSize: '0.8rem', color: 'var(--color-text-light)', marginBottom: '15px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <MapPin size={12} color="var(--color-primary)" /> {item.location}
+                <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.75rem', color: 'var(--color-text-light)', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <MapPin size={12} color="var(--color-primary)" style={{ flexShrink: 0 }} /> 
+                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.location}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Calendar size={12} color="var(--color-primary)" /> {formatDate(item.date)}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Calendar size={12} color="var(--color-primary)" style={{ flexShrink: 0 }} /> 
+                        <span>{formatDate(item.date)}</span>
                     </div>
                 </div>
                 
-                <Link to={`/items/${item._id}`} className="btn btn-outline" style={{ width: '100%', textAlign: 'center', padding: '6px', fontSize: '0.9rem' }}>
-                    View & Claim
+                <Link to={`/items/${item._id}`} className="btn btn-outline" style={{ width: '100%', textAlign: 'center', padding: '5px', fontSize: '0.8rem', borderRadius: '8px' }}>
+                    View details
                 </Link>
             </div>
         </div>
