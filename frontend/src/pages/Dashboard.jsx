@@ -58,8 +58,19 @@ const Dashboard = () => {
                     {user.name.charAt(0)}
                 </div>
                 <div style={{ flex: 1, minWidth: '250px' }}>
-                    <h1 style={{ marginBottom: '5px', fontSize: 'clamp(1.8rem, 6vw, 2.5rem)', color: 'var(--color-primary)', textTransform: 'capitalize', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.5px' }}>
-                        <span style={{ color: 'var(--color-heading)' }}>{user.name.split(' ')[0].trim()}'s</span> Dashboard
+                    <h1 style={{ 
+                        marginBottom: '5px', 
+                        fontSize: 'clamp(1.4rem, 4vw, 1.8rem)', 
+                        textTransform: 'capitalize', 
+                        fontWeight: 900, 
+                        lineHeight: 1.1, 
+                        letterSpacing: '0.5px',
+                        background: 'linear-gradient(135deg, #61509D, #E83E8C, #F57C00)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        display: 'inline-block'
+                    }}>
+                        {user.name.split(' ')[0].trim()}'s Workspace
                     </h1>
                     <p style={{ color: 'var(--color-text-light)', display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', wordBreak: 'break-all' }}>
                         <CheckCircle size={16} color="#2e7d32" flexShrink={0} /> <span>Verified <strong>{user.email}</strong></span>
@@ -67,39 +78,18 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Quick Action Banner Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-                
-                {/* Lost Item Card */}
-                <div className="interactive-card" style={{ backgroundColor: '#FFF0EA', borderRadius: '16px', padding: '20px', display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    <div style={{ filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.1))', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
-                        <img src={lostIllustration} alt="Lost Item" style={{ width: '120px', height: '120px', objectFit: 'contain', borderRadius: '12px' }} />
-                    </div>
-                    <div style={{ flex: '1 1 200px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <h3 style={{ color: '#2C3E50', fontSize: '1.4rem', marginBottom: '8px', fontWeight: 800 }}>Lost an Item?</h3>
-                        <p style={{ color: '#546E7A', fontSize: '0.95rem', margin: 0, maxWidth: '250px' }}>Post a lost item here so the campus can help you find it.</p>
-                        <div style={{ marginTop: '15px' }}>
-                            <Link to="/create" style={{ display: 'inline-block', border: '2px solid #FFB74D', color: '#F57C00', background: 'transparent', padding: '6px 20px', borderRadius: '8px', fontSize: '1.05rem', fontWeight: 'bold', textDecoration: 'none', transition: 'all 0.2s' }}>
-                                Post It
-                            </Link>
-                        </div>
-                    </div>
+            {/* User Statistics Row instead of massive cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '15px', marginBottom: '40px' }}>
+                <div className="glass-card hover-lift" style={{ padding: '20px', textAlign: 'center', borderRadius: '16px', background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.6)' }}>
+                    <Layers size={28} color="#61509D" style={{ marginBottom: '10px' }} />
+                    <h3 style={{ fontSize: '2rem', margin: '0 0 5px 0', color: '#2C3E50', fontWeight: 800 }}>{myItems.length}</h3>
+                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#546E7A', fontWeight: 600 }}>Active Listings</p>
                 </div>
-
-                {/* Found Item Card */}
-                <div className="interactive-card" style={{ backgroundColor: '#FFFDF0', borderRadius: '16px', padding: '20px', display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    <div style={{ filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.1))', display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
-                        <img src={foundIllustration} alt="Found Item" style={{ width: '120px', height: '120px', objectFit: 'contain', borderRadius: '12px' }} />
-                    </div>
-                    <div style={{ flex: '1 1 200px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <h3 style={{ color: '#2C3E50', fontSize: '1.4rem', marginBottom: '8px', fontWeight: 800 }}>Found an Item?</h3>
-                        <p style={{ color: '#546E7A', fontSize: '0.95rem', margin: 0, maxWidth: '250px' }}>Post a found item here so the owner can securely claim it.</p>
-                        <div style={{ marginTop: '15px' }}>
-                            <Link to="/create" style={{ display: 'inline-block', border: '2px solid #81C784', color: '#4CAF50', background: 'transparent', padding: '6px 20px', borderRadius: '8px', fontSize: '1.05rem', fontWeight: 'bold', textDecoration: 'none', transition: 'all 0.2s' }}>
-                                Post It
-                            </Link>
-                        </div>
-                    </div>
+                
+                <div className="glass-card hover-lift" style={{ padding: '20px', textAlign: 'center', borderRadius: '16px', background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.6)' }}>
+                    <CheckCircle size={28} color="#2e7d32" style={{ marginBottom: '10px' }} />
+                    <h3 style={{ fontSize: '2rem', margin: '0 0 5px 0', color: '#2C3E50', fontWeight: 800 }}>{myItems.filter(i => i.status === 'Returned').length}</h3>
+                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#546E7A', fontWeight: 600 }}>Items Resolved</p>
                 </div>
             </div>
 
