@@ -39,8 +39,11 @@ const Home = () => {
     };
 
     return (
-        <div className="app-container" style={{ padding: '40px 0' }}>
+        <div className="app-container home-wrapper">
             <style>{`
+                .home-wrapper {
+                    padding: 40px 0;
+                }
                 .hero-container {
                     padding: 40px 30px;
                     margin-bottom: 40px;
@@ -62,6 +65,9 @@ const Home = () => {
                 }
                 
                 @media (max-width: 768px) {
+                    .home-wrapper {
+                        padding: 15px 0 !important;
+                    }
                     .hero-container {
                         padding: 20px 15px !important;
                         margin-bottom: 25px !important;
