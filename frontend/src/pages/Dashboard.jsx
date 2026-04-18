@@ -53,6 +53,19 @@ const Dashboard = () => {
 
     return (
         <div className="app-container animate-fade-in" style={{ padding: '40px 20px', position: 'relative', overflow: 'hidden', minHeight: '100vh' }}>
+            <style>{`
+                .discovery-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                    gap: 30px;
+                }
+                @media (max-width: 768px) {
+                    .discovery-grid {
+                        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                        gap: 15px;
+                    }
+                }
+            `}</style>
             {/* Playful Floating Campus Elements */}
             <div style={{ position: 'absolute', top: '10%', right: '5%', opacity: 0.1, fontSize: '5rem', animation: 'float 8s infinite', pointerEvents: 'none', zIndex: 0 }}>🎓</div>
             <div style={{ position: 'absolute', top: '40%', left: '2%', opacity: 0.1, fontSize: '4rem', animation: 'float 10s infinite reverse', pointerEvents: 'none', zIndex: 0 }}>📍</div>
@@ -112,7 +125,7 @@ const Dashboard = () => {
                         <p>You haven't posted any items yet.</p>
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '25px' }}>
+                    <div className="discovery-grid">
                         {myItems.map(item => (
                             <div key={item._id} style={{ position: 'relative' }}>
                                 <ItemCard item={item} />
