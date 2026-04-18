@@ -40,22 +40,66 @@ const Home = () => {
 
     return (
         <div className="app-container" style={{ padding: '40px 0' }}>
-            {/* Hero Section */}
-            <div className="glass-card animate-fade-in" style={{ padding: '40px 20px', marginBottom: '40px', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
+            <style>{`
+                .hero-container {
+                    padding: 40px 30px;
+                    margin-bottom: 40px;
+                }
+                .hero-title {
+                    font-size: 2.5rem;
+                    margin-bottom: 15px;
+                }
+                .hero-subtitle {
+                    font-size: 1.1rem;
+                    margin-bottom: 30px;
+                }
+                .float-icon {
+                    position: absolute;
+                    animation: float 6s ease-in-out infinite alternate;
+                    pointer-events: none;
+                    z-index: 1;
+                    filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
+                }
                 
-                {/* Floating Aesthetic Elements */}
-                <div style={{ position: 'absolute', right: '15%', top: '10%', opacity: 0.25, fontSize: '4.5rem', animation: 'float 6s ease-in-out infinite' }}>🔑</div>
-                <div style={{ position: 'absolute', right: '5%', bottom: '20%', opacity: 0.2, fontSize: '5rem', animation: 'float 8s ease-in-out infinite reverse' }}>📱</div>
-                <div style={{ position: 'absolute', right: '25%', bottom: '15%', opacity: 0.15, fontSize: '3.5rem', animation: 'float 10s ease-in-out infinite' }}>⌚</div>
-                <div style={{ position: 'absolute', right: '40%', top: '5%', opacity: 0.2, fontSize: '3rem', animation: 'float 7s ease-in-out infinite reverse' }}>👓</div>
+                @media (max-width: 768px) {
+                    .hero-container {
+                        padding: 20px 15px !important;
+                        margin-bottom: 25px !important;
+                    }
+                    .hero-title {
+                        font-size: 1.6rem !important;
+                        margin-bottom: 10px !important;
+                        line-height: 1.2;
+                    }
+                    .hero-subtitle {
+                        font-size: 0.9rem !important;
+                        margin-bottom: 20px !important;
+                    }
+                    .float-icon {
+                        transform: scale(0.65) !important;
+                    }
+                }
+            `}</style>
+            
+            {/* Hero Section */}
+            <div className="glass-card animate-fade-in hero-container" style={{ borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
+                
+                {/* Floating Aesthetic Elements (Darker and More Numerous) */}
+                <div className="float-icon" style={{ right: '10%', top: '5%', opacity: 0.4, fontSize: '4.5rem', animationDelay: '0s' }}>🔑</div>
+                <div className="float-icon" style={{ right: '3%', bottom: '15%', opacity: 0.35, fontSize: '5rem', animationDelay: '-2s', animationDuration: '8s' }}>📱</div>
+                <div className="float-icon" style={{ right: '25%', bottom: '10%', opacity: 0.3, fontSize: '3.5rem', animationDelay: '-4s', animationDuration: '10s' }}>⌚</div>
+                <div className="float-icon" style={{ right: '40%', top: '8%', opacity: 0.35, fontSize: '3rem', animationDelay: '-1s', animationDuration: '7s' }}>👓</div>
+                <div className="float-icon" style={{ left: '55%', top: '25%', opacity: 0.25, fontSize: '2.5rem', animationDelay: '-3s', animationDuration: '9s' }}>🎒</div>
+                <div className="float-icon" style={{ left: '65%', bottom: '15%', opacity: 0.3, fontSize: '3rem', animationDelay: '-5s', animationDuration: '6s' }}>📚</div>
+                <div className="float-icon" style={{ right: '18%', top: '45%', opacity: 0.25, fontSize: '2.5rem', animationDelay: '-1.5s', animationDuration: '8.5s' }}>🎧</div>
                 
                 {/* Soft glowing blob inside the hero */}
                 <div style={{ position: 'absolute', right: '-10%', top: '-20%', width: '400px', height: '400px', background: 'radial-gradient(circle, var(--color-secondary) 0%, rgba(255,255,255,0) 70%)', opacity: 0.6, zIndex: 0, borderRadius: '50%' }}></div>
                 <div style={{ position: 'absolute', right: '10%', bottom: '-30%', width: '350px', height: '350px', background: 'radial-gradient(circle, var(--color-tertiary) 0%, rgba(255,255,255,0) 70%)', opacity: 0.4, zIndex: 0, borderRadius: '50%' }}></div>
 
                 <div style={{ maxWidth: '600px', position: 'relative', zIndex: 2 }}>
-                    <h1 style={{ fontSize: '2.5rem', marginBottom: '15px' }}>Recover What's Yours. <br/><span style={{ color: 'var(--color-tertiary)' }}>Help Others Find Theirs.</span></h1>
-                    <p style={{ fontSize: '1.1rem', color: 'var(--color-text-light)', marginBottom: '30px' }}>
+                    <h1 className="hero-title">Recover What's Yours. <br/><span style={{ color: 'var(--color-tertiary)' }}>Help Others Find Theirs.</span></h1>
+                    <p className="hero-subtitle" style={{ color: 'var(--color-text-light)' }}>
                         The official, secure Lost & Found system for SRMIST. Verified students only. 
                         Safe, fast, and reliable campus recovery.
                     </p>
