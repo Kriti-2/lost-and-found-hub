@@ -84,6 +84,9 @@ const Home = () => {
                     .float-icon {
                         transform: scale(0.65) !important;
                     }
+                    .hide-on-mobile {
+                        display: none !important;
+                    }
                 }
             `}</style>
             
@@ -93,11 +96,11 @@ const Home = () => {
                 {/* Floating Aesthetic Elements (Darker and More Numerous) */}
                 <div className="float-icon" style={{ right: '10%', top: '5%', opacity: 0.4, fontSize: '4.5rem', animationDelay: '0s' }}>🔑</div>
                 <div className="float-icon" style={{ right: '3%', bottom: '15%', opacity: 0.35, fontSize: '5rem', animationDelay: '-2s', animationDuration: '8s' }}>📱</div>
-                <div className="float-icon" style={{ right: '25%', bottom: '10%', opacity: 0.3, fontSize: '3.5rem', animationDelay: '-4s', animationDuration: '10s' }}>⌚</div>
+                <div className="float-icon hide-on-mobile" style={{ right: '25%', bottom: '10%', opacity: 0.3, fontSize: '3.5rem', animationDelay: '-4s', animationDuration: '10s' }}>⌚</div>
                 <div className="float-icon" style={{ right: '40%', top: '8%', opacity: 0.35, fontSize: '3rem', animationDelay: '-1s', animationDuration: '7s' }}>👓</div>
-                <div className="float-icon" style={{ left: '55%', top: '25%', opacity: 0.25, fontSize: '2.5rem', animationDelay: '-3s', animationDuration: '9s' }}>🎒</div>
-                <div className="float-icon" style={{ left: '65%', bottom: '15%', opacity: 0.3, fontSize: '3rem', animationDelay: '-5s', animationDuration: '6s' }}>📚</div>
-                <div className="float-icon" style={{ right: '18%', top: '45%', opacity: 0.25, fontSize: '2.5rem', animationDelay: '-1.5s', animationDuration: '8.5s' }}>🎧</div>
+                <div className="float-icon hide-on-mobile" style={{ left: '55%', top: '25%', opacity: 0.25, fontSize: '2.5rem', animationDelay: '-3s', animationDuration: '9s' }}>🎒</div>
+                <div className="float-icon hide-on-mobile" style={{ left: '65%', bottom: '15%', opacity: 0.3, fontSize: '3rem', animationDelay: '-5s', animationDuration: '6s' }}>📚</div>
+                <div className="float-icon hide-on-mobile" style={{ right: '18%', top: '45%', opacity: 0.25, fontSize: '2.5rem', animationDelay: '-1.5s', animationDuration: '8.5s' }}>🎧</div>
                 
                 {/* Soft glowing blob inside the hero */}
                 <div style={{ position: 'absolute', right: '-10%', top: '-20%', width: '400px', height: '400px', background: 'radial-gradient(circle, var(--color-secondary) 0%, rgba(255,255,255,0) 70%)', opacity: 0.6, zIndex: 0, borderRadius: '50%' }}></div>
