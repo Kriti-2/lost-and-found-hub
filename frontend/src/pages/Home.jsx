@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import ItemCard from '../components/ItemCard';
 import { Search, Filter, Loader } from 'lucide-react';
 import { toast } from 'react-toastify';
+import lostIllustration from '../assets/illustrations/lost_item.png';
+import foundIllustration from '../assets/illustrations/found_item.png';
 
 const Home = () => {
     const [items, setItems] = useState([]);
@@ -69,6 +72,39 @@ const Home = () => {
                             onChange={(e) => setSearch(e.target.value)}
                             style={{ flexGrow: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: '1rem', fontFamily: 'inherit' }}
                         />
+                    </div>
+                </div>
+            </div>
+
+            {/* Small Quick Action Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+                <div className="interactive-card" style={{ backgroundColor: '#FFF0EA', borderRadius: '16px', padding: '15px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <div style={{ filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.1))', flexShrink: 0 }}>
+                        <img src={lostIllustration} alt="Lost Item" style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '12px' }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={{ color: '#2C3E50', fontSize: '1.2rem', marginBottom: '4px' }}>Lost an Item?</h3>
+                        <p style={{ color: '#546E7A', fontSize: '0.9rem', margin: 0, marginBottom: '8px' }}>Post it here for easy recovery</p>
+                        <div>
+                            <Link to="/create" style={{ display: 'inline-block', border: '1px solid #FFB74D', color: '#F57C00', background: 'transparent', padding: '4px 16px', borderRadius: '8px', fontSize: '0.9rem', fontWeight: 'bold', textDecoration: 'none', transition: 'all 0.2s' }}>
+                                Post It
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="interactive-card" style={{ backgroundColor: '#FFFDF0', borderRadius: '16px', padding: '15px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <div style={{ filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.1))', flexShrink: 0 }}>
+                        <img src={foundIllustration} alt="Found Item" style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '12px' }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={{ color: '#2C3E50', fontSize: '1.2rem', marginBottom: '4px' }}>Found an Item?</h3>
+                        <p style={{ color: '#546E7A', fontSize: '0.9rem', margin: 0, marginBottom: '8px' }}>Reach the owner quickly</p>
+                        <div>
+                            <Link to="/create" style={{ display: 'inline-block', border: '1px solid #81C784', color: '#4CAF50', background: 'transparent', padding: '4px 16px', borderRadius: '8px', fontSize: '0.9rem', fontWeight: 'bold', textDecoration: 'none', transition: 'all 0.2s' }}>
+                                Post It
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
