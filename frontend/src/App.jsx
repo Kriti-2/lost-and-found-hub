@@ -11,6 +11,7 @@ import CreateItem from './pages/CreateItem';
 import ItemDetails from './pages/ItemDetails';
 import Inbox from './pages/Inbox';
 import PrivateRoute from './components/PrivateRoute';
+import AdminPanel from './pages/AdminPanel';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/create" element={<CreateItem />} />
                 <Route path="/edit/:id" element={<CreateItem />} />
                 <Route path="/inbox" element={<Inbox />} />
+                <Route path="/admin" element={<AdminPanel />} />
             </Route>
           </Routes>
         </main>

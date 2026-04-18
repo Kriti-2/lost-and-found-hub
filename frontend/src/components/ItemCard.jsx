@@ -26,7 +26,7 @@ const ItemCard = ({ item }) => {
             <div style={{ height: '200px', backgroundColor: 'var(--color-bg)', position: 'relative' }}>
                 {item.image ? (
                     <img 
-                        src={`${IMAGE_BASE_URL}${item.image}`} 
+                        src={item.image.startsWith('http') ? item.image : `${IMAGE_BASE_URL}${item.image.startsWith('/') ? item.image.substring(1) : item.image}`} 
                         alt={item.name} 
                         className="card-img-zoom"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }} 

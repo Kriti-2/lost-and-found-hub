@@ -21,7 +21,7 @@ _Recover What's Yours. Help Others Find Theirs._
 
 ### 🏠 Home Page – Hero & Search
 
-![Home Page Hero](./screenshots/home_hero.png)
+![Home Page Hero](./screenshots/homepage)
 
 ### 🔍 Discovery Hub – Browse Items
 

@@ -29,10 +29,12 @@ mongoose.connect(MONGO_URI)
 const authRoutes = require('./routes/auth');
 const itemRoutes = require('./routes/items');
 const chatRoutes = require('./routes/chat');
+const adminRoutes = require('./routes/admin');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/admin', adminRoutes);
 
 // General error handler
 app.use((err, req, res, next) => {

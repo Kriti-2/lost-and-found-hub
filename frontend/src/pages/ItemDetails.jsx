@@ -54,7 +54,7 @@ const ItemDetails = () => {
             <div className="glass-card" style={{ display: 'flex', flexWrap: 'wrap', overflow: 'hidden' }}>
                 <div style={{ flex: '1 1 40%', minWidth: '300px', backgroundColor: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '30px' }}>
                     {item.image ? (
-                        <img src={`${IMAGE_BASE_URL}${item.image}`} alt={item.name} style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain', borderRadius: '16px', boxShadow: 'var(--shadow-md)' }} />
+                        <img src={item.image.startsWith('http') ? item.image : `${IMAGE_BASE_URL}${item.image.startsWith('/') ? item.image.substring(1) : item.image}`} alt={item.name} style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain', borderRadius: '16px', boxShadow: 'var(--shadow-md)' }} />
                     ) : (
                         <div style={{ width: '100%', height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-tertiary)' }}>
                             <Tag size={100} opacity={0.3} />

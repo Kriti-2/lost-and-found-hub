@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Search, PlusCircle, User, LogOut, Package, Bell, MessageSquare, Trash2 } from 'lucide-react';
+import { Search, PlusCircle, User, LogOut, Package, Bell, MessageSquare, Trash2, ShieldAlert } from 'lucide-react';
 
 const Navbar = () => {
     const { user, logout, markNotificationsAsRead, deleteNotification } = useContext(AuthContext);
@@ -92,6 +92,11 @@ const Navbar = () => {
                             </div>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', borderLeft: '1px solid rgba(0,0,0,0.1)', paddingLeft: '15px' }}>
+                                {user.isAdmin && (
+                                    <Link to="/admin" className="hover-link" style={{ display: 'flex', color: '#d32f2f' }} title="Admin Dashboard">
+                                        <ShieldAlert size={20} />
+                                    </Link>
+                                )}
                                 <Link to="/dashboard" className="hover-underline" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500 }}>
                                     <User size={18} /> <span className="mobile-nav-hide">{user.name}</span>
                                 </Link>

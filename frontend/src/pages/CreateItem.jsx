@@ -40,7 +40,7 @@ const CreateItem = () => {
                 status: item.status
             });
             if (item.image) {
-                setImagePreview(`${IMAGE_BASE_URL}${item.image}`);
+                setImagePreview(item.image.startsWith('http') ? item.image : `${IMAGE_BASE_URL}${item.image.startsWith('/') ? item.image.substring(1) : item.image}`);
             }
         } catch (err) {
             toast.error("Failed to load item for editing");
