@@ -63,6 +63,11 @@ const Home = () => {
                     z-index: 1;
                     filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.15));
                 }
+                .discovery-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                    gap: 30px;
+                }
                 
                 @media (max-width: 768px) {
                     .home-wrapper {
@@ -86,6 +91,10 @@ const Home = () => {
                     }
                     .hide-on-mobile {
                         display: none !important;
+                    }
+                    .discovery-grid {
+                        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                        gap: 15px;
                     }
                 }
             `}</style>
@@ -195,7 +204,7 @@ const Home = () => {
 
             {/* Grid */}
             {loading ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '30px' }}>
+                <div className="discovery-grid">
                     {[1, 2, 3, 4, 5, 6].map(i => (
                         <div key={i} className="glass-card interactive-card" style={{ height: '350px', padding: '0', display: 'flex', flexDirection: 'column' }}>
                             <div className="skeleton" style={{ height: '200px', width: '100%', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0' }}></div>
@@ -215,7 +224,7 @@ const Home = () => {
                     <p>Try adjusting your search criteria or filters.</p>
                 </div>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '30px' }}>
+                <div className="discovery-grid">
                     {items.map((item, idx) => (
                         <div key={item._id} className={`animate-fade-in delay-${(idx % 3 + 1) * 100}`}>
                             <ItemCard item={item} />

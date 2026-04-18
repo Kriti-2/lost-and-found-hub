@@ -23,7 +23,7 @@ const ItemCard = ({ item }) => {
 
     return (
         <div className="glass-card animate-fade-in interactive-card" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
-            <div style={{ height: '200px', backgroundColor: 'var(--color-bg)', position: 'relative' }}>
+            <div style={{ aspectRatio: '4/3', width: '100%', backgroundColor: 'var(--color-bg)', position: 'relative' }}>
                 {item.image ? (
                     <img 
                         src={item.image.startsWith('http') ? item.image : `${IMAGE_BASE_URL}${item.image.startsWith('/') ? item.image.substring(1) : item.image}`} 
@@ -62,22 +62,22 @@ const ItemCard = ({ item }) => {
                 </div>
             </div>
             
-            <div style={{ padding: '20px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <h3 style={{ marginBottom: '10px', fontSize: '1.25rem' }}>{item.name}</h3>
-                <p style={{ color: 'var(--color-text-light)', fontSize: '0.9rem', marginBottom: '15px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            <div style={{ padding: '12px 15px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ marginBottom: '6px', fontSize: '1.1rem', lineHeight: 1.2 }}>{item.name}</h3>
+                <p style={{ color: 'var(--color-text-light)', fontSize: '0.85rem', marginBottom: '10px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.4 }}>
                     {item.description}
                 </p>
                 
-                <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', color: 'var(--color-text-light)', marginBottom: '20px' }}>
+                <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '5px', fontSize: '0.8rem', color: 'var(--color-text-light)', marginBottom: '15px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <MapPin size={14} color="var(--color-primary)" /> {item.location}
+                        <MapPin size={12} color="var(--color-primary)" /> {item.location}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Calendar size={14} color="var(--color-primary)" /> {formatDate(item.date)}
+                        <Calendar size={12} color="var(--color-primary)" /> {formatDate(item.date)}
                     </div>
                 </div>
                 
-                <Link to={`/items/${item._id}`} className="btn btn-outline" style={{ width: '100%', textAlign: 'center' }}>
+                <Link to={`/items/${item._id}`} className="btn btn-outline" style={{ width: '100%', textAlign: 'center', padding: '6px', fontSize: '0.9rem' }}>
                     View & Claim
                 </Link>
             </div>
