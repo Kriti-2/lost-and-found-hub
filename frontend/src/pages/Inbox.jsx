@@ -154,21 +154,21 @@ const Inbox = () => {
             {selectedChat ? (
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', background: 'rgba(255,255,255,0.1)' }}>
                     {/* Chat Header */}
-                    <div style={{ padding: '20px 25px', borderBottom: '1px solid rgba(155, 142, 199, 0.2)', display: 'flex', alignItems: 'center', gap: '15px', background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(10px)' }}>
-                        <button onClick={() => setSelectedChat(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: window.innerWidth < 768 ? 'block' : 'none', color: 'var(--color-heading)' }}>
-                            <ArrowLeft size={24} />
+                    <div style={{ padding: '15px 20px', borderBottom: '1px solid rgba(155, 142, 199, 0.2)', display: 'flex', alignItems: 'center', gap: '15px', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', zIndex: 10 }}>
+                        <button onClick={() => setSelectedChat(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: window.innerWidth < 768 ? 'flex' : 'none', color: 'var(--color-heading)', padding: '5px', borderRadius: '50%', backgroundColor: 'rgba(155,142,199,0.1)' }}>
+                            <ArrowLeft size={22} />
                         </button>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-primary), var(--color-tertiary))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                        <div style={{ width: '45px', height: '45px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-primary), var(--color-tertiary))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', boxShadow: '0 4px 10px rgba(97, 80, 157, 0.3)' }}>
                             {(getOtherParticipant(selectedChat)?.name?.[0] || '?').toUpperCase()}
                         </div>
                         <div style={{ flex: 1 }}>
-                            <h3 style={{ margin: '0 0 4px 0', fontSize: '1.15rem' }}>{getOtherParticipant(selectedChat)?.name || 'Unknown User'}</h3>
-                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-primary)', fontWeight: '600' }}>Re: {selectedChat.item?.name || 'Deleted Item'}</p>
+                            <h3 style={{ margin: '0 0 4px 0', fontSize: '1.2rem', fontWeight: 800, color: '#2C3E50' }}>{getOtherParticipant(selectedChat)?.name || 'Unknown User'}</h3>
+                            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-primary)', fontWeight: '600' }}>Re: {selectedChat.item?.name || 'Deleted Item'}</p>
                         </div>
                     </div>
 
-                    {/* Messages Area */}
-                    <div className="chat-scroll" style={{ flex: 1, padding: '25px', overflowY: 'auto', background: 'rgba(255,255,255,0.2)' }}>
+                    {/* Messages Area - Appliying creative dot-grid pattern */}
+                    <div className="chat-scroll" style={{ flex: 1, padding: '25px', overflowY: 'auto', backgroundColor: '#F8F9FA', backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%2361509D\' fill-opacity=\'0.06\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E")', backgroundSize: '15px 15px' }}>
                         {selectedChat.messages.map((msg, idx) => {
                             const isMe = msg.sender === user._id || msg.sender === user.id;
                             const isAutomated = msg.content.startsWith('[Automated System]');
@@ -204,16 +204,16 @@ const Inbox = () => {
                             <button type="button" onClick={() => setMessage("Is this still available?")} className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.8rem', borderRadius: '20px' }}>Is this available?</button>
                             <button type="button" onClick={() => setMessage("Where can we meet?")} className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.8rem', borderRadius: '20px' }}>Where to meet?</button>
                         </div>
-                        <form onSubmit={sendMessage} style={{ display: 'flex', gap: '15px' }}>
+                        <form onSubmit={sendMessage} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                             <input 
                                 type="text" 
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
                                 placeholder="Type a secure message..." 
                                 className="input-field"
-                                style={{ flex: 1, margin: 0, borderRadius: '25px', padding: '14px 22px', border: '1px solid rgba(155, 142, 199, 0.4)', background: 'rgba(255,255,255,0.9)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)', fontSize: '1rem' }}
+                                style={{ flex: 1, margin: 0, borderRadius: '25px', padding: '14px 22px', border: 'none', background: 'white', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', fontSize: '1rem' }}
                             />
-                            <button type="submit" disabled={!message.trim()} style={{ background: message.trim() ? 'linear-gradient(135deg, var(--color-primary), var(--color-heading))' : '#d1cdda', color: 'white', border: 'none', borderRadius: '50%', width: '52px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: message.trim() ? 'pointer' : 'not-allowed', transition: '0.3s', boxShadow: message.trim() ? '0 4px 15px rgba(155,142,199,0.4)' : 'none' }}>
+                            <button type="submit" disabled={!message.trim()} style={{ background: message.trim() ? 'linear-gradient(135deg, #61509D, #E83E8C)' : '#d1cdda', color: 'white', border: 'none', borderRadius: '50%', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: message.trim() ? 'pointer' : 'not-allowed', transition: '0.3s', boxShadow: message.trim() ? '0 4px 15px rgba(232,62,140,0.4)' : 'none', flexShrink: 0 }}>
                                 <Send size={22} style={{ marginLeft: '2px', transform: message.trim() ? 'scale(1.1)' : 'scale(1)', transition: '0.3s' }} />
                             </button>
                         </form>

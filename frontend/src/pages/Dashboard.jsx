@@ -52,11 +52,18 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="app-container animate-fade-in" style={{ padding: '40px 20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '40px', flexWrap: 'wrap' }}>
-                <div style={{ backgroundColor: 'var(--color-primary)', color: 'white', width: '70px', height: '70px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 'bold', flexShrink: 0 }}>
-                    {user.name.charAt(0)}
-                </div>
+        <div className="app-container animate-fade-in" style={{ padding: '40px 20px', position: 'relative', overflow: 'hidden', minHeight: '100vh' }}>
+            {/* Playful Floating Campus Elements */}
+            <div style={{ position: 'absolute', top: '10%', right: '5%', opacity: 0.1, fontSize: '5rem', animation: 'float 8s infinite', pointerEvents: 'none', zIndex: 0 }}>🎓</div>
+            <div style={{ position: 'absolute', top: '40%', left: '2%', opacity: 0.1, fontSize: '4rem', animation: 'float 10s infinite reverse', pointerEvents: 'none', zIndex: 0 }}>📍</div>
+            <div style={{ position: 'absolute', bottom: '15%', right: '8%', opacity: 0.1, fontSize: '6rem', animation: 'float 7s infinite', pointerEvents: 'none', zIndex: 0 }}>📦</div>
+            <div style={{ position: 'absolute', top: '20%', left: '80%', opacity: 0.05, fontSize: '3.5rem', animation: 'float 9s infinite ease-in-out', pointerEvents: 'none', zIndex: 0 }}>🔍</div>
+
+            <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '40px', flexWrap: 'wrap' }}>
+                    <div style={{ backgroundColor: 'var(--color-primary)', color: 'white', width: '70px', height: '70px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 'bold', flexShrink: 0, boxShadow: '0 8px 20px rgba(97, 80, 157, 0.3)' }}>
+                        {user.name.charAt(0)}
+                    </div>
                 <div style={{ flex: 1, minWidth: '250px' }}>
                     <h1 style={{ 
                         marginBottom: '5px', 
@@ -136,6 +143,7 @@ const Dashboard = () => {
                         ))}
                     </div>
                 )}
+            </div>
             </div>
         </div>
     );
