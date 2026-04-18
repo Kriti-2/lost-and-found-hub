@@ -6,11 +6,11 @@
   "display": "standalone",
   "background_color": "#F2EAE0",
   "theme_color": "#61509D",
-  "icons": [
+    "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml"
+      "src": "/app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
     }
   ]
 }
