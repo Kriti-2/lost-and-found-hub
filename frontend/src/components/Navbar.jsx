@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useContext, useState, useRef, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Search, PlusCircle, User, LogOut, Package, Bell, MessageCircle, MessageSquare, Trash2, ShieldAlert } from 'lucide-react';
+import { Search, PlusCircle, User, LogOut, Package, Bell, MessageSquare, Trash2, ShieldAlert } from 'lucide-react';
 
 const Navbar = () => {
     const { user, logout, markNotificationsAsRead, deleteNotification, unreadChatCount } = useContext(AuthContext);
@@ -86,7 +86,7 @@ const Navbar = () => {
                                     transition: 'all 0.3s',
                                     textDecoration: 'none'
                                 }} title="My Messages" className="navbar-chat-button">
-                                    <MessageCircle size={20} color="var(--color-primary)" />
+                                    <MessageSquare size={20} color="var(--color-primary)" />
                                     <span className="mobile-nav-hide" style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-primary)' }}>Messages</span>
                                     {unreadChatCount > 0 && (
                                         <span style={{ 
