@@ -1,14 +1,9 @@
 import { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import io from 'socket.io-client';
 import { Send, ArrowLeft, Loader2, MessageSquare, Trash2, X } from 'lucide-react';
-import api, { IMAGE_BASE_URL } from '../utils/api';
-
-const socket = io(IMAGE_BASE_URL);
-
-const Inbox = () => {
-    const { user } = useContext(AuthContext);
+import api from '../utils/api';
+    const { user, socket, fetchUnreadCount } = useContext(AuthContext);
     const navigate = useNavigate();
     
     const [chats, setChats] = useState([]);
@@ -49,7 +44,12 @@ const Inbox = () => {
                     messages: [...prev.messages, messageWithStatus]
                 }));
                 // Tell server it's read
-                api.patch(`/chat/${data.room}/read`).catch(err => {});
+                api.patch(`/chat/${data.room}/read`).then(() => {
+                    fetchUnreadCount(); // Clear global badge
+                }).catch(err => {});
+            } else {
+                // If not actively reading this chat, ensure global count is refreshed
+                fetchUnreadCount();
             }
             
             // Also update the preview in the side panel
@@ -101,6 +101,8 @@ const Inbox = () => {
         // Mark as read on server
         try {
             await api.patch(`/chat/${chat._id}/read`);
+            // Update global navbar count
+            fetchUnreadCount();
         } catch (err) {
             console.error("Failed to mark messages as read on server", err);
         }

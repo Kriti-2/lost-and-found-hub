@@ -1,11 +1,14 @@
 import { createContext, useState, useEffect } from 'react';
-import api from '../utils/api';
+import api, { IMAGE_BASE_URL } from '../utils/api';
 import { toast } from 'react-toastify';
+import io from 'socket.io-client';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [unreadChatCount, setUnreadChatCount] = useState(0);
+    const [socket, setSocket] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -15,6 +18,7 @@ export const AuthProvider = ({ children }) => {
                 try {
                     const res = await api.get('/auth/me');
                     setUser(res.data);
+                    fetchUnreadCount();
                 } catch (err) {
                     console.error("Token invalid", err);
                     localStorage.removeItem('token');
@@ -25,6 +29,33 @@ export const AuthProvider = ({ children }) => {
         };
         checkLoggedIn();
     }, []);
+
+    const fetchUnreadCount = async () => {
+        try {
+            const res = await api.get('/chat/unread-count');
+            setUnreadChatCount(res.data.count);
+        } catch (err) {
+            console.error("Error fetching unread count", err);
+        }
+    };
+
+    // Socket.io initialization
+    useEffect(() => {
+        if (user) {
+            const newSocket = io(IMAGE_BASE_URL);
+            setSocket(newSocket);
+
+            newSocket.on("receive_message", (data) => {
+                // If not already in the inbox page, increment count
+                // (The inbox page itself will handle its own list updates)
+                if (window.location.pathname !== '/inbox') {
+                    setUnreadChatCount(prev => prev + 1);
+                }
+            });
+
+            return () => newSocket.close();
+        }
+    }, [user]);
 
     const login = async (email, password) => {
         try {
@@ -158,7 +189,11 @@ export const AuthProvider = ({ children }) => {
             verifyEmail,
             resendVerificationOTP,
             forgotPassword,
-            resetPassword
+            resetPassword,
+            unreadChatCount,
+            setUnreadChatCount,
+            fetchUnreadCount,
+            socket
         }}>
             {children}
         </AuthContext.Provider>

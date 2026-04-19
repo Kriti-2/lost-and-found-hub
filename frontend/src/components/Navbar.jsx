@@ -1,10 +1,10 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useContext, useState, useRef, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Search, PlusCircle, User, LogOut, Package, Bell, MessageSquare, Trash2, ShieldAlert } from 'lucide-react';
+import { Search, PlusCircle, User, LogOut, Package, Bell, MessageCircle, MessageSquare, Trash2, ShieldAlert } from 'lucide-react';
 
 const Navbar = () => {
-    const { user, logout, markNotificationsAsRead, deleteNotification } = useContext(AuthContext);
+    const { user, logout, markNotificationsAsRead, deleteNotification, unreadChatCount } = useContext(AuthContext);
     const navigate = useNavigate();
     const location = useLocation();
     const [showNotifications, setShowNotifications] = useState(false);
@@ -73,8 +73,43 @@ const Navbar = () => {
 
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginLeft: '10px', gap: '15px' }}>
                                 
-                                <Link to="/inbox" style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', display: 'flex' }} title="Secure Messages">
-                                    <MessageSquare size={22} color="var(--color-text-light)" />
+                                <Link to="/inbox" style={{ 
+                                    background: unreadChatCount > 0 ? 'rgba(97, 80, 157, 0.1)' : 'rgba(97, 80, 157, 0.05)', 
+                                    border: unreadChatCount > 0 ? '1px solid var(--color-primary)' : '1px solid rgba(97, 80, 157, 0.2)', 
+                                    cursor: 'pointer', 
+                                    position: 'relative', 
+                                    display: 'flex', 
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '8px 14px', 
+                                    borderRadius: '12px', 
+                                    transition: 'all 0.3s',
+                                    textDecoration: 'none'
+                                }} title="My Messages" className="navbar-chat-button">
+                                    <MessageCircle size={20} color="var(--color-primary)" />
+                                    <span className="mobile-nav-hide" style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-primary)' }}>Messages</span>
+                                    {unreadChatCount > 0 && (
+                                        <span style={{ 
+                                            position: 'absolute', 
+                                            top: '-8px', 
+                                            right: '-8px', 
+                                            background: '#e91e63', 
+                                            color: 'white', 
+                                            borderRadius: '50%', 
+                                            padding: '2px 7px', 
+                                            fontSize: '0.7rem', 
+                                            fontWeight: '900', 
+                                            border: '2px solid white', 
+                                            boxShadow: '0 2px 8px rgba(233, 30, 99, 0.4)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            minWidth: '20px',
+                                            height: '20px'
+                                        }}>
+                                            {unreadChatCount}
+                                        </span>
+                                    )}
                                 </Link>
 
                                 <div ref={notifRef} style={{ position: 'relative', display: 'flex' }}>
@@ -148,6 +183,11 @@ const Navbar = () => {
             <style>{`
                 .hover-link:hover { color: var(--color-primary); }
                 .delete-notif-btn:hover { color: #d32f2f !important; }
+                .navbar-chat-button:hover { 
+                    transform: translateY(-2px); 
+                    background: rgba(97, 80, 157, 0.15) !important;
+                    box-shadow: 0 4px 12px rgba(97, 80, 157, 0.15);
+                }
                 @media (max-width: 768px) {
                     .btn-post { padding: 8px !important; }
                     .notif-dropdown { right: -60px !important; }

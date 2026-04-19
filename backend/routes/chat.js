@@ -40,6 +40,31 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 });
 
+// @route   GET /api/chat/unread-count
+// @desc    Get total number of unread messages for the user
+router.get('/unread-count', authMiddleware, async (req, res) => {
+    try {
+        const chats = await Chat.find({ 
+            participants: req.user.id,
+            hiddenBy: { $nin: [req.user.id] } 
+        });
+
+        let totalUnread = 0;
+        const userId = req.user.id.toString();
+
+        chats.forEach(chat => {
+            totalUnread += chat.messages.filter(m => 
+                m.sender.toString() !== userId && !m.isRead
+            ).length;
+        });
+
+        res.json({ count: totalUnread });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error fetching unread count' });
+    }
+});
+
 // @route   POST /api/chat/:id/message
 // @desc    Send a message via HTTP (fallback/initial load)
 router.post('/:id/message', authMiddleware, async (req, res) => {
