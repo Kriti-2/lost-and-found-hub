@@ -156,7 +156,15 @@ const Login = () => {
 
                         <div style={{ width: '100%', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', margin: 'auto 0' }}>
                             <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '-55px', overflow: 'visible' }}>
-                                <img src="/logo.png" alt="Campus Find Logo" style={{ width: '110%', maxWidth: '380px', display: 'block', mixBlendMode: 'multiply', clipPath: 'inset(11% 8% 36% 8%)', pointerEvents: 'none', filter: 'brightness(1.08) contrast(1.15)', transform: 'translateY(35px)' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                                <img src="/logo.png" alt="Campus Find Logo" style={{ 
+                                    width: '110%', 
+                                    maxWidth: '380px', 
+                                    display: 'block', 
+                                    WebkitMaskImage: 'radial-gradient(ellipse 46% 35% at 50% 32%, black 65%, transparent 95%)',
+                                    maskImage: 'radial-gradient(ellipse 46% 35% at 50% 32%, black 65%, transparent 95%)',
+                                    pointerEvents: 'none', 
+                                    transform: 'translateY(15px)' 
+                                }} onError={(e) => { e.target.style.display = 'none'; }} />
                             </div>
                             
                             <h1 style={{ color: '#1B1446', fontSize: 'clamp(2.4rem, 10vw, 3.2rem)', fontWeight: 800, margin: '0 0 5px', letterSpacing: '-1px', position: 'relative', zIndex: 5 }}>Campus <span style={{ color: '#8874C2', fontWeight: 700 }}>Find</span></h1>
