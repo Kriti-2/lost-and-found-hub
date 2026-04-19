@@ -10,6 +10,10 @@ const Navbar = () => {
     const [showNotifications, setShowNotifications] = useState(false);
     const notifRef = useRef(null);
 
+    if (location.pathname === '/login') {
+        return null;
+    }
+
     // Auto-close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -54,7 +58,7 @@ const Navbar = () => {
                     <div style={{ background: 'var(--color-primary)', color: 'white', padding: '8px', borderRadius: '12px' }}>
                         <Package size={24} />
                     </div>
-                    <h2 className="mobile-nav-hide" style={{ margin: 0, fontSize: '1.5rem', color: 'var(--color-heading)' }}>Lost & Found Hub</h2>
+                    <h2 className="mobile-nav-hide" style={{ margin: 0, fontSize: '1.5rem', color: 'var(--color-heading)' }}>Campus Find</h2>
                 </Link>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
