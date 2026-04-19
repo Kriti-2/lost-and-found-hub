@@ -112,17 +112,20 @@ const Inbox = () => {
     };
 
     const deleteChat = async (e, chatId) => {
-        e.stopPropagation(); // Don't select the chat when deleting
-        if (!window.confirm("Are you sure you want to delete this chat? It will hide it from your list.")) return;
+        e.stopPropagation();
+        e.preventDefault();
+        
+        if (!window.confirm("Are you sure you want to delete this chat history? This will hide the conversation from your view.")) return;
         
         try {
             await api.delete(`/chat/${chatId}`);
-            setChats(prev => prev.filter(c => c._id !== chatId));
-            if (selectedChat?._id === chatId) {
+            setChats(prev => prev.filter(c => c._id.toString() !== chatId.toString()));
+            if (selectedChat && selectedChat._id.toString() === chatId.toString()) {
                 setSelectedChat(null);
             }
         } catch (err) {
             console.error("Error deleting chat", err);
+            toast.error("Failed to delete chat");
         }
     };
 
@@ -213,20 +216,50 @@ const Inbox = () => {
                                             
                                             {/* Unread Badge */}
                                             {(() => {
-                                                const unreadCount = chat.messages.filter(m => (m.sender !== user._id && m.sender !== user.id) && !m.isRead).length;
+                                                const currentUserId = (user._id || user.id).toString();
+                                                const unreadCount = chat.messages.filter(m => 
+                                                    m.sender.toString() !== currentUserId && !m.isRead
+                                                ).length;
+                                                
                                                 return unreadCount > 0 && !isSelected && (
-                                                    <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#FF4136', color: 'white', borderRadius: '50%', width: '20px', height: '20px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid white', fontWeight: 'bold' }}>
+                                                    <span style={{ 
+                                                        position: 'absolute', 
+                                                        top: '-8px', 
+                                                        right: '-8px', 
+                                                        background: '#e91e63', 
+                                                        color: 'white', 
+                                                        borderRadius: '50%', 
+                                                        minWidth: '22px', 
+                                                        height: '22px', 
+                                                        fontSize: '0.75rem', 
+                                                        display: 'flex', 
+                                                        alignItems: 'center', 
+                                                        justifyContent: 'center', 
+                                                        border: '2px solid white', 
+                                                        fontWeight: 'bold',
+                                                        boxShadow: '0 2px 5px rgba(233, 30, 99, 0.3)'
+                                                    }}>
                                                         {unreadCount}
                                                     </span>
                                                 );
                                             })()}
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <h4 style={{ margin: '0 0 5px 0', fontSize: '1.05rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: isSelected ? '800' : '600', color: '#2C3E50' }}>{otherUser?.name || 'Unknown User'}</h4>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                <h4 style={{ margin: '0 0 5px 0', fontSize: '1.05rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: isSelected ? '800' : '600', color: '#2C3E50', flex: 1 }}>{otherUser?.name || 'Unknown User'}</h4>
                                                 <button 
                                                     onClick={(e) => deleteChat(e, chat._id)}
-                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '6px', color: 'rgba(211, 47, 47, 0.4)', transition: '0.2s' }}
+                                                    style={{ 
+                                                        background: 'rgba(0,0,0,0.03)', 
+                                                        border: 'none', 
+                                                        cursor: 'pointer', 
+                                                        padding: '6px', 
+                                                        borderRadius: '8px', 
+                                                        color: 'rgba(211, 47, 47, 0.4)', 
+                                                        transition: 'all 0.2s',
+                                                        marginLeft: '8px',
+                                                        display: 'flex'
+                                                    }}
                                                     className="delete-chat-btn"
                                                     title="Delete Conversation"
                                                 >
@@ -342,13 +375,3 @@ const Inbox = () => {
 };
 
 export default Inbox;
-
-// Adding styles for the delete button
-const styleTag = document.createElement('style');
-styleTag.innerHTML = `
-    .delete-chat-btn:hover {
-        background-color: rgba(211, 47, 47, 0.1) !important;
-        color: rgba(211, 47, 47, 1) !important;
-    }
-`;
-document.head.appendChild(styleTag);
