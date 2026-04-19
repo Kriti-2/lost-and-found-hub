@@ -34,7 +34,7 @@ import api from '../utils/api';
 
     useEffect(() => {
         socket.on("receive_message", (data) => {
-            const isRead = selectedChat && data.room === selectedChat._id;
+            const isRead = selectedChat && selectedChat._id.toString() === data.room.toString();
             
             const messageWithStatus = { ...data.message, isRead };
 
@@ -54,7 +54,7 @@ import api from '../utils/api';
             
             // Also update the preview in the side panel
             setChats(prevChats => prevChats.map(c => {
-                if (c._id === data.room) {
+                if (c._id.toString() === data.room.toString()) {
                     return { ...c, messages: [...c.messages, messageWithStatus] };
                 }
                 return c;
@@ -89,7 +89,7 @@ import api from '../utils/api';
         
         // Mark as read locally
         setChats(prevChats => prevChats.map(c => {
-            if (c._id === chat._id) {
+            if (c._id.toString() === chat._id.toString()) {
                 return {
                     ...c,
                     messages: c.messages.map(m => ({ ...m, isRead: true }))
@@ -209,7 +209,8 @@ import api from '../utils/api';
                                         boxShadow: isSelected ? '0 8px 20px rgba(97,80,157,0.12)' : '0 2px 8px rgba(0,0,0,0.02)',
                                         border: isSelected ? '1px solid rgba(97,80,157,0.4)' : '1px solid rgba(155,142,199,0.15)',
                                         position: 'relative',
-                                        transition: 'all 0.3s ease'
+                                        transition: 'all 0.3s ease',
+                                        zIndex: 1
                                     }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -250,22 +251,27 @@ import api from '../utils/api';
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                 <h4 style={{ margin: '0 0 5px 0', fontSize: '1.05rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: isSelected ? '800' : '600', color: '#2C3E50', flex: 1 }}>{otherUser?.name || 'Unknown User'}</h4>
                                                 <button 
-                                                    onClick={(e) => deleteChat(e, chat._id)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        deleteChat(e, chat._id);
+                                                    }}
                                                     style={{ 
                                                         background: 'rgba(0,0,0,0.03)', 
                                                         border: 'none', 
                                                         cursor: 'pointer', 
-                                                        padding: '6px', 
-                                                        borderRadius: '8px', 
-                                                        color: 'rgba(211, 47, 47, 0.4)', 
+                                                        padding: '8px', 
+                                                        borderRadius: '10px', 
+                                                        color: 'rgba(211, 47, 47, 0.6)', 
                                                         transition: 'all 0.2s',
                                                         marginLeft: '8px',
-                                                        display: 'flex'
+                                                        display: 'flex',
+                                                        position: 'relative',
+                                                        zIndex: 10
                                                     }}
                                                     className="delete-chat-btn"
                                                     title="Delete Conversation"
                                                 >
-                                                    <Trash2 size={16} />
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </div>
                                             <p style={{ margin: 0, fontSize: '0.85rem', color: isSelected ? 'var(--color-primary)' : 'var(--color-text-light)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
