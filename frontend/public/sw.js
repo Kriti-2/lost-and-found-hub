@@ -10,6 +10,12 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Pass through all requests to the network
-  event.respondWith(fetch(event.request));
+  // Pass through all requests to the network safely
+  event.respondWith(
+    fetch(event.request).catch(err => {
+      // Return a basic error or just log it silently
+      console.warn('[SW] Fetch failed for:', event.request.url);
+      return new Response('Network error occurred', { status: 408, statusText: 'Network Error' });
+    })
+  );
 });
