@@ -10,10 +10,6 @@ const Navbar = () => {
     const [showNotifications, setShowNotifications] = useState(false);
     const notifRef = useRef(null);
 
-    if (location.pathname === '/login') {
-        return null;
-    }
-
     // Auto-close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -50,6 +46,10 @@ const Navbar = () => {
     };
 
     const unreadCount = user?.notifications?.filter(n => !n.isRead).length || 0;
+
+    if (location.pathname === '/login') {
+        return null;
+    }
 
     return (
         <nav className="glass-nav" style={{ padding: '15px 0' }}>
