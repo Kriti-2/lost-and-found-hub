@@ -3,6 +3,8 @@ import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Send, ArrowLeft, Loader2, MessageSquare, Trash2 } from 'lucide-react';
 import api from '../utils/api';
+
+const Inbox = () => {
     const { user, socket, fetchUnreadCount } = useContext(AuthContext);
     const navigate = useNavigate();
     
