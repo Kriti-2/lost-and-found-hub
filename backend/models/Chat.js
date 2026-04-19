@@ -13,6 +13,10 @@ const MessageSchema = new mongoose.Schema({
     timestamp: {
         type: Date,
         default: Date.now
+    },
+    isRead: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -28,6 +32,10 @@ const ChatSchema = new mongoose.Schema({
         required: true
     },
     messages: [MessageSchema],
+    hiddenBy: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     createdAt: {
         type: Date,
         default: Date.now

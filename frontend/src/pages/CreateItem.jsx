@@ -88,13 +88,22 @@ const CreateItem = () => {
                 setIsScanning(true);
                 const img = new Image();
                 img.src = imagePreview;
-                await new Promise((resolve) => { img.onload = resolve; });
+                await new Promise((resolve, reject) => { 
+                    img.onload = resolve; 
+                    img.onerror = () => reject(new Error("Failed to load image for scanning"));
+                });
 
                 let model = nsfwModel;
                 if (!model) {
-                    // Fallback in case it wasn't pre-loaded yet
-                    model = await nsfwjs.load();
-                    setNsfwModel(model);
+                    try {
+                        model = await nsfwjs.load();
+                        setNsfwModel(model);
+                    } catch (mErr) {
+                        toast.error("Security module could not be initialized. Please refresh and try again.");
+                        setLoading(false);
+                        setIsScanning(false);
+                        return;
+                    }
                 }
                 
                 const predictions = await model.classify(img);
@@ -112,6 +121,10 @@ const CreateItem = () => {
                 }
             } catch (scanError) {
                 console.error("Content scan failed", scanError);
+                toast.error("Could not verify image security. Please try a different image.");
+                setLoading(false);
+                setIsScanning(false);
+                return;
             } finally {
                 setIsScanning(false);
             }

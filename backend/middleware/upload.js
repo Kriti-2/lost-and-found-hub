@@ -25,4 +25,4 @@ const upload = multer({
     limits: { fileSize: 5000000 } // 5MB limit
 });
 
-module.exports = upload;
+module.exports = { upload, cloudinary };

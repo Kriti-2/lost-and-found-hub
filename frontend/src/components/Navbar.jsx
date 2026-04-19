@@ -106,14 +106,18 @@ const Navbar = () => {
                                                             <Trash2 size={14} />
                                                         </button>
                                                         <p style={{ margin: '0 0 8px 0', color: 'var(--color-text)', paddingRight: '20px' }}>
-                                                            <strong>{notif.senderName}</strong> sent a claim request for your item: <strong>{notif.itemName}</strong>
+                                                            <strong>{notif.senderName}</strong>
+                                                            {notif.message.includes('New message') ? ' messaged you about ' : (notif.message.includes('Return') ? ' update for ' : ' sent a claim request for ')}
+                                                            <strong>{notif.itemName}</strong>
                                                         </p>
                                                         <div style={{ background: 'rgba(255,255,255,0.8)', padding: '8px', borderRadius: '6px', fontStyle: 'italic', marginBottom: '8px', borderLeft: '3px solid var(--color-primary)' }}>
                                                             "{notif.message}"
                                                         </div>
-                                                        <p style={{ margin: '0', fontSize: '0.75rem', color: 'var(--color-text-light)' }}>
-                                                            Contact them directly: <strong>{notif.senderEmail}</strong>
-                                                        </p>
+                                                        {notif.senderEmail && (
+                                                            <p style={{ margin: '0', fontSize: '0.75rem', color: 'var(--color-text-light)' }}>
+                                                                Email: <strong>{notif.senderEmail}</strong>
+                                                            </p>
+                                                        )}
                                                     </div>
                                                 ))
                                             )}

@@ -2,7 +2,7 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
-import { Send, ArrowLeft, Loader2, MessageSquare } from 'lucide-react';
+import { Send, ArrowLeft, Loader2, MessageSquare, Trash2, X } from 'lucide-react';
 import api, { IMAGE_BASE_URL } from '../utils/api';
 
 const socket = io(IMAGE_BASE_URL);
@@ -39,17 +39,23 @@ const Inbox = () => {
 
     useEffect(() => {
         socket.on("receive_message", (data) => {
-            if (selectedChat && data.room === selectedChat._id) {
+            const isRead = selectedChat && data.room === selectedChat._id;
+            
+            const messageWithStatus = { ...data.message, isRead };
+
+            if (isRead) {
                 setSelectedChat(prev => ({
                     ...prev,
-                    messages: [...prev.messages, data.message]
+                    messages: [...prev.messages, messageWithStatus]
                 }));
+                // Tell server it's read
+                api.patch(`/chat/${data.room}/read`).catch(err => {});
             }
             
             // Also update the preview in the side panel
             setChats(prevChats => prevChats.map(c => {
                 if (c._id === data.room) {
-                    return { ...c, messages: [...c.messages, data.message] };
+                    return { ...c, messages: [...c.messages, messageWithStatus] };
                 }
                 return c;
             }));
@@ -77,13 +83,46 @@ const Inbox = () => {
         return () => window.removeEventListener('popstate', handlePopState);
     }, [selectedChat]);
 
-    const selectChat = (chat) => {
+    const selectChat = async (chat) => {
         setSelectedChat(chat);
         socket.emit("join_room", chat._id);
         
+        // Mark as read locally
+        setChats(prevChats => prevChats.map(c => {
+            if (c._id === chat._id) {
+                return {
+                    ...c,
+                    messages: c.messages.map(m => ({ ...m, isRead: true }))
+                };
+            }
+            return c;
+        }));
+
+        // Mark as read on server
+        try {
+            await api.patch(`/chat/${chat._id}/read`);
+        } catch (err) {
+            console.error("Failed to mark messages as read on server", err);
+        }
+
         // Push a state to the history stack so the hardware back button has something to pop
         if (window.innerWidth < 768) {
             window.history.pushState({ chatOpen: true }, '');
+        }
+    };
+
+    const deleteChat = async (e, chatId) => {
+        e.stopPropagation(); // Don't select the chat when deleting
+        if (!window.confirm("Are you sure you want to delete this chat? It will hide it from your list.")) return;
+        
+        try {
+            await api.delete(`/chat/${chatId}`);
+            setChats(prev => prev.filter(c => c._id !== chatId));
+            if (selectedChat?._id === chatId) {
+                setSelectedChat(null);
+            }
+        } catch (err) {
+            console.error("Error deleting chat", err);
         }
     };
 
@@ -169,11 +208,31 @@ const Inbox = () => {
                                     }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                                        <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--color-primary), var(--color-tertiary))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(155,142,199,0.3)', flexShrink: 0 }}>
+                                        <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--color-primary), var(--color-tertiary))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(155,142,199,0.3)', flexShrink: 0, position: 'relative' }}>
                                             {(otherUser?.name?.[0] || '?').toUpperCase()}
+                                            
+                                            {/* Unread Badge */}
+                                            {(() => {
+                                                const unreadCount = chat.messages.filter(m => (m.sender !== user._id && m.sender !== user.id) && !m.isRead).length;
+                                                return unreadCount > 0 && !isSelected && (
+                                                    <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#FF4136', color: 'white', borderRadius: '50%', width: '20px', height: '20px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid white', fontWeight: 'bold' }}>
+                                                        {unreadCount}
+                                                    </span>
+                                                );
+                                            })()}
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
-                                            <h4 style={{ margin: '0 0 5px 0', fontSize: '1.05rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: isSelected ? '800' : '600', color: '#2C3E50' }}>{otherUser?.name || 'Unknown User'}</h4>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <h4 style={{ margin: '0 0 5px 0', fontSize: '1.05rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: isSelected ? '800' : '600', color: '#2C3E50' }}>{otherUser?.name || 'Unknown User'}</h4>
+                                                <button 
+                                                    onClick={(e) => deleteChat(e, chat._id)}
+                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '6px', color: 'rgba(211, 47, 47, 0.4)', transition: '0.2s' }}
+                                                    className="delete-chat-btn"
+                                                    title="Delete Conversation"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
                                             <p style={{ margin: 0, fontSize: '0.85rem', color: isSelected ? 'var(--color-primary)' : 'var(--color-text-light)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {chat.item?.name || 'Deleted Item'}
                                             </p>
@@ -283,3 +342,13 @@ const Inbox = () => {
 };
 
 export default Inbox;
+
+// Adding styles for the delete button
+const styleTag = document.createElement('style');
+styleTag.innerHTML = `
+    .delete-chat-btn:hover {
+        background-color: rgba(211, 47, 47, 0.1) !important;
+        color: rgba(211, 47, 47, 1) !important;
+    }
+`;
+document.head.appendChild(styleTag);

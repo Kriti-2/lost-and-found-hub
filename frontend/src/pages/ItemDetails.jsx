@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api, { IMAGE_BASE_URL } from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
-import { MapPin, Calendar, User as UserIcon, MessageSquare, ShieldCheck, Tag } from 'lucide-react';
+import { MapPin, Calendar, User as UserIcon, MessageSquare, ShieldCheck, Tag, ShieldAlert } from 'lucide-react';
 
 const ItemDetails = () => {
     const { id } = useParams();
@@ -112,17 +112,37 @@ const ItemDetails = () => {
                                 }} className="btn btn-outline" style={{ flexGrow: 1, borderColor: '#2e7d32', color: '#2e7d32' }}>Mark as Returned</button>
                             )}
                         </div>
-                    ) : item.status !== 'Returned' && (
-                        <div>
-                            {hasClaimed ? (
-                                <div style={{ padding: '15px', backgroundColor: '#e3f2fd', color: '#1565c0', borderRadius: '12px', textAlign: 'center', fontWeight: '500' }}>
-                                    Claim request sent! Waiting for response from owner.
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                            {item.status !== 'Returned' && (
+                                <div>
+                                    {hasClaimed ? (
+                                        <div style={{ padding: '15px', backgroundColor: '#e3f2fd', color: '#1565c0', borderRadius: '12px', textAlign: 'center', fontWeight: '500' }}>
+                                            Claim request sent! Waiting for response from owner.
+                                        </div>
+                                    ) : (
+                                        <button onClick={() => { user ? setShowClaimModal(true) : navigate('/login') }} className="btn btn-primary" style={{ width: '100%', padding: '15px', fontSize: '1.1rem' }}>
+                                            <MessageSquare size={20} /> {item.type === 'Lost' ? "I Found This!" : "This is Mine!"}
+                                        </button>
+                                    )}
                                 </div>
-                            ) : (
-                                <button onClick={() => { user ? setShowClaimModal(true) : navigate('/login') }} className="btn btn-primary" style={{ width: '100%', padding: '15px', fontSize: '1.1rem' }}>
-                                    <MessageSquare size={20} /> {item.type === 'Lost' ? "I Found This!" : "This is Mine!"}
-                                </button>
                             )}
+                            
+                            <button 
+                                onClick={async () => {
+                                    if (!window.confirm("Are you sure you want to report this item?")) return;
+                                    try {
+                                        await api.post(`/items/${item._id}/report`);
+                                        toast.success("Thank you. Our moderation team will review this listing.");
+                                    } catch (err) {
+                                        toast.error(err.response?.data?.message || "Failed to report item");
+                                    }
+                                }} 
+                                className="btn btn-outline" 
+                                style={{ color: '#d32f2f', borderColor: '#d32f2f', background: 'rgba(211, 47, 47, 0.05)' }}
+                            >
+                                <ShieldAlert size={18} /> Report Listing for Review
+                            </button>
                         </div>
                     )}
                 </div>

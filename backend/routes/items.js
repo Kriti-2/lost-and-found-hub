@@ -2,10 +2,19 @@ const express = require('express');
 const Item = require('../models/Item');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
-const upload = require('../middleware/upload');
+const { upload, cloudinary } = require('../middleware/upload');
 const { sendMail } = require('../utils/mailer');
+const { checkImageNSFW } = require('../utils/moderation');
 const Filter = require('bad-words');
 const filter = new Filter();
+
+// Add custom bad words to the filter
+const customBadWords = [
+    'fuk', 'shit', 'asshole', 'bastard', 'dick', 'pussy', 'nude', 'porn', 'sex', 'naked',
+    'bitch', 'crap', 'damn', 'hell', 'piss', 'slut', 'whore', 'bastard', 'faggot', 'nigger',
+    'kike', 'spic', 'chink', 'wetback', 'retard', 'rape', 'murder', 'kill', 'suicide'
+];
+filter.addWords(...customBadWords);
 
 const router = express.Router();
 
@@ -55,6 +64,16 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
         let imageUrl = '';
         if (req.file) {
             imageUrl = req.file.path;
+
+            // Backend Image Moderation Check
+            const isNSFW = await checkImageNSFW(imageUrl);
+            if (isNSFW) {
+                // Delete from cloudinary immediately
+                if (req.file.filename) {
+                    await cloudinary.uploader.destroy(req.file.filename);
+                }
+                return res.status(400).json({ message: 'Inappropriate image detected. Post rejected.' });
+            }
         }
 
         const newItem = new Item({
@@ -137,6 +156,13 @@ router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
 
         const { type, name, description, location, date, status } = req.body;
         
+        // Profanity Check for updates
+        if ((name && filter.isProfane(name)) || 
+            (description && filter.isProfane(description)) || 
+            (location && filter.isProfane(location))) {
+            return res.status(400).json({ message: 'Inappropriate language detected. Update rejected.' });
+        }
+
         item.type = type || item.type;
         item.name = name || item.name;
         item.description = description || item.description;
@@ -145,10 +171,55 @@ router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
         item.status = status || item.status;
 
         if (req.file) {
-            item.image = req.file.path;
+            const imageUrl = req.file.path;
+
+            // Backend Image Moderation Check
+            const isNSFW = await checkImageNSFW(imageUrl);
+            if (isNSFW) {
+                // Delete from cloudinary immediately
+                if (req.file.filename) {
+                    await cloudinary.uploader.destroy(req.file.filename);
+                }
+                return res.status(400).json({ message: 'Inappropriate image detected. Update rejected.' });
+            }
+
+            item.image = imageUrl;
         }
 
         const updatedItem = await item.save();
+
+        // Notify regarding "Returned" status
+        if (status === 'Returned') {
+            const owner = await User.findById(item.user);
+            
+            // Email to Owner
+            if (owner) {
+                const subject = "Item Successfully Returned!";
+                const html = `<h3>Congratulations!</h3><p>Your item <strong>"${item.name}"</strong> has been marked as <strong>Returned</strong>.</p><p>Thank you for using the Lost & Found Hub!</p>`;
+                await sendMail(owner.email, subject, "Your item has been marked as returned.", html);
+            }
+
+            // Notify all claimers
+            for (const claim of item.claims) {
+                const claimer = await User.findById(claim.claimerId);
+                if (claimer) {
+                    // In-app Notification
+                    claimer.notifications.push({
+                        senderName: "System",
+                        message: `The item "${item.name}" you claimed has been marked as Returned (Resolved).`,
+                        itemName: item.name,
+                        isRead: false
+                    });
+                    await claimer.save();
+
+                    // Email to Claimer
+                    const subject = "Update: A Claimed Item has been Returned";
+                    const html = `<h3>Item Resolved!</h3><p>Hello ${claimer.name},</p><p>The item <strong>"${item.name}"</strong> that you sent a claim for has been marked as <strong>Returned / Resolved</strong> by the owner.</p><p>If you have already received the item, great! If not, please check the chat for any last details.</p>`;
+                    await sendMail(claimer.email, subject, "An item you claimed is now marked as returned.", html);
+                }
+            }
+        }
+
         res.json(updatedItem);
     } catch (err) {
         res.status(500).json({ message: 'Server Error' });
@@ -240,6 +311,8 @@ router.post('/:id/claim', authMiddleware, async (req, res) => {
                 sender: req.user.id,
                 content: `[Automated System]: Reminder Claim Request - "${message}"`
             });
+            // Ensure the chat is not hidden for the owner
+            existingChat.hiddenBy = existingChat.hiddenBy.filter(id => id.toString() !== item.user._id.toString());
             await existingChat.save();
         }
 
