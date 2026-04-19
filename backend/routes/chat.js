@@ -11,15 +11,29 @@ const router = express.Router();
 // @desc    Get all chat rooms for the logged in user
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        const chats = await Chat.find({ 
+        // Find chats where the user is a participant and has not hidden them
+        const rawChats = await Chat.find({ 
             participants: req.user.id,
-            hiddenBy: { $ne: req.user.id } // Filter out hidden chats
+            hiddenBy: { $nin: [req.user.id] } 
         })
             .populate('participants', 'name email profilePicture')
             .populate('item', 'name image status')
             .sort({ 'messages.timestamp': -1 });
 
-        res.json(chats);
+        // Filter out chats where the item was deleted (orphaned chats)
+        // We also mark them as hidden so they don't show up in future queries either
+        const validChats = [];
+        for (const chat of rawChats) {
+            if (!chat.item) {
+                // Auto-hide orphaned chat
+                chat.hiddenBy.push(req.user.id);
+                await chat.save();
+            } else {
+                validChats.push(chat);
+            }
+        }
+
+        res.json(validChats);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error fetching chats' });
@@ -139,7 +153,10 @@ router.delete('/:id', authMiddleware, async (req, res) => {
         }
 
         // Add to hiddenBy if not already there
-        if (!chat.hiddenBy.includes(req.user.id)) {
+        const userId = req.user.id.toString();
+        const alreadyHidden = chat.hiddenBy.some(id => id.toString() === userId);
+        
+        if (!alreadyHidden) {
             chat.hiddenBy.push(req.user.id);
             await chat.save();
         }
