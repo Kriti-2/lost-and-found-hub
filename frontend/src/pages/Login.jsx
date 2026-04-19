@@ -21,7 +21,7 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     if (user) {
-        return <Navigate to="/" />;
+        return <Navigate to="/explore" />;
     }
 
     const resetMessages = () => {
@@ -49,12 +49,12 @@ const Login = () => {
             if (res.success && res.requiresVerification) {
                 setStep('verify');
             } else if (res.success) {
-                navigate('/');
+                navigate('/explore');
             }
         } else {
             const res = await login(email, password);
             if (res.success) {
-                navigate('/');
+                navigate('/explore');
             } else if (res.unverified) {
                 setStep('verify');
             }
