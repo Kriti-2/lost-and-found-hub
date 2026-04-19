@@ -94,7 +94,6 @@ router.post('/:id/message', authMiddleware, async (req, res) => {
         // ----------------------------------------------------
         // Notification Logic: Notify the other participant(s)
         // ----------------------------------------------------
-        const otherParticipantId = chat.participants.find(p => p.toString() !== req.user.id);
         const recipient = await User.findById(otherParticipantId);
         const sender = await User.findById(req.user.id);
         
