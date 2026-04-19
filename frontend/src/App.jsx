@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, AuthContext } from './context/AuthContext';
+import { useContext } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,6 +14,12 @@ import Inbox from './pages/Inbox';
 import PrivateRoute from './components/PrivateRoute';
 import AdminPanel from './pages/AdminPanel';
 
+const RootRoute = () => {
+    const { user, loading } = useContext(AuthContext);
+    if (loading) return null; // Wait until auth state resolves
+    return user ? <Navigate to="/explore" /> : <Login />;
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -25,7 +32,8 @@ function App() {
         
         <main>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<RootRoute />} />
+            <Route path="/explore" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/items/:id" element={<ItemDetails />} />
             

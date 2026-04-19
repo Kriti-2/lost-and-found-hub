@@ -47,7 +47,8 @@ const Navbar = () => {
 
     const unreadCount = user?.notifications?.filter(n => !n.isRead).length || 0;
 
-    if (location.pathname === '/login') {
+    const isLandingPage = location.pathname === '/' && !user;
+    if (location.pathname === '/login' || isLandingPage) {
         return null;
     }
 
@@ -62,7 +63,7 @@ const Navbar = () => {
                 </Link>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                    <Link to="/" style={{ fontWeight: 500 }} className="hover-underline mobile-nav-hide">Explore</Link>
+                    <Link to="/explore" style={{ fontWeight: 500 }} className="hover-underline mobile-nav-hide">Explore</Link>
                     
                     {user ? (
                         <>
