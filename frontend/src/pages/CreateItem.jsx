@@ -22,6 +22,21 @@ const CreateItem = () => {
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [nsfwModel, setNsfwModel] = useState(null);
+    const [isScanning, setIsScanning] = useState(false);
+
+    useEffect(() => {
+        const loadModel = async () => {
+            try {
+                const model = await nsfwjs.load();
+                setNsfwModel(model);
+                console.log("NSFW Model loaded successfully");
+            } catch (err) {
+                console.error("Failed to load NSFW model", err);
+            }
+        };
+        loadModel();
+    }, []);
 
     useEffect(() => {
         if (isEditMode) {
@@ -70,12 +85,18 @@ const CreateItem = () => {
         // Security Check: Block Obscene/NSFW Imagery
         if (imageFile) {
             try {
-                toast.info("Security scanning image content...");
+                setIsScanning(true);
                 const img = new Image();
                 img.src = imagePreview;
                 await new Promise((resolve) => { img.onload = resolve; });
 
-                const model = await nsfwjs.load();
+                let model = nsfwModel;
+                if (!model) {
+                    // Fallback in case it wasn't pre-loaded yet
+                    model = await nsfwjs.load();
+                    setNsfwModel(model);
+                }
+                
                 const predictions = await model.classify(img);
                 
                 // Identify high-risk categories (Porn, Hentai, Sexy)
@@ -84,13 +105,15 @@ const CreateItem = () => {
                 );
 
                 if (nsfwFound) {
-                    toast.error("Security Warning: This image is inappropriate and was blocked.");
+                    toast.error("Security Warning: Inappropriate content detected. Post blocked.");
                     setLoading(false);
+                    setIsScanning(false);
                     return;
                 }
             } catch (scanError) {
                 console.error("Content scan failed", scanError);
-                // We proceed if there's a weird scan error, but warn the dev
+            } finally {
+                setIsScanning(false);
             }
         }
 
@@ -226,8 +249,8 @@ const CreateItem = () => {
                         </div>
                     </div>
 
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '30px', padding: '15px' }} disabled={loading}>
-                        <Save size={20} /> {loading ? 'Saving...' : isEditMode ? 'Update Item' : 'Publish Listing'}
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '30px', padding: '15px' }} disabled={loading || isScanning}>
+                        <Save size={20} /> {loading ? (isScanning ? 'Security Scanning...' : 'Saving...') : isEditMode ? 'Update Item' : 'Publish Listing'}
                     </button>
                 </form>
             </div>
