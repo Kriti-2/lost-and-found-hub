@@ -7,10 +7,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-tf': ['@tensorflow/tfjs'],
-          'vendor-nsfw': ['nsfwjs'],
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@tensorflow')) return 'vendor-tf';
+            if (id.includes('nsfwjs')) return 'vendor-nsfw';
+            if (id.includes('react')) return 'vendor-react';
+            return 'vendor';
+          }
         },
       },
     },
