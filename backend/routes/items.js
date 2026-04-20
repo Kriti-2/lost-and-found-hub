@@ -81,51 +81,36 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
         const savedItem = await newItem.save();
 
         // ------------------
-        // Background Tasks (NSFW Check & Matching)
+        // Background Tasks (Automated Matching)
         // ------------------
-        // Fire and forget to improve response time and prevent timeouts
+        // We already scan for NSFW on the frontend to protect the server and save CPU.
+        // We only do the matching logic here.
         setImmediate(async () => {
             try {
-                // Secondary Backend Image Moderation (Already checked on frontend)
-                if (imageUrl) {
-                    const isNSFW = await checkImageNSFW(imageUrl);
-                    if (isNSFW) {
-                        savedItem.isHidden = true;
-                        await savedItem.save();
-                        if (req.file && req.file.filename) {
-                            await cloudinary.uploader.destroy(req.file.filename);
-                        }
-                        console.log(`NSFW detected on backend for item ${savedItem._id}. Item hidden.`);
-                    }
-                }
-
                 // Matching Algorithm: If a "Found" item is posted, notify users who lost something similar
-                if (savedItem.type === 'Found' && name) {
-                    const keywords = name.split(' ').filter(word => word.length > 2).join('|');
+                if (savedItem.type === 'Found' && name && name.length > 3) {
+                    const keywords = name.toLowerCase().split(' ').filter(word => word.length > 3);
                     if (keywords.length > 0) {
-                        const regexPattern = new RegExp(keywords, 'i');
+                        // Simpler and faster search: matches at least one keyword
                         const matchingLostItems = await Item.find({
                             type: 'Lost',
-                            name: { $regex: regexPattern }
-                        }).populate('user');
+                            name: { $regex: keywords.join('|'), $options: 'i' }
+                        }).populate('user').limit(5); // Limit notifications to prevent mail spam/hang
 
                         for (let lostItem of matchingLostItems) {
-                            if (lostItem.user && lostItem.user.email) {
-                                const subject = "Good News: A Potential Match for Your Lost Item!";
-                                const text = `Hello ${lostItem.user.name},\n\nAn item named "${savedItem.name}" was just found and posted on the hub. This may match your lost item "${lostItem.name}"!\n\nLog in to check it out.`;
-                                const html = `<h3>Potential Match Alert!</h3>
-                                    <p>Hello ${lostItem.user.name},</p>
-                                    <p>Someone just posted a <strong>Found</strong> item named <em>"${savedItem.name}"</em>.</p>
-                                    <p>This looks similar to your lost item <em>"${lostItem.name}"</em>!</p>
-                                    <p>Please log in to the Lost & Found Hub to see if this is yours.</p>`;
-                                
-                                await sendMail(lostItem.user.email, subject, text, html);
+                            if (lostItem.user?.email) {
+                                sendMail(
+                                    lostItem.user.email,
+                                    "Potential Match for Your Lost Item!",
+                                    `A potential match ("${savedItem.name}") for your lost item "${lostItem.name}" was found.`,
+                                    `<p>Hello ${lostItem.user.name}, someone posted a <strong>Found</strong> item named <em>"${savedItem.name}"</em> which may match your lost item!</p>`
+                                ).catch(e => console.error("Email error:", e));
                             }
                         }
                     }
                 }
             } catch (bgErr) {
-                console.error("Background processing error:", bgErr);
+                console.error("Background matching error:", bgErr);
             }
         });
 
