@@ -19,10 +19,9 @@ const Dashboard = () => {
 
     const fetchMyItems = async () => {
         try {
-            // Using all items and filtering locally for simplicity in this demo.
-            const res = await api.get('/items');
-            const filteredItems = res.data.filter(item => item.user._id === (user.id || user._id));
-            setMyItems(filteredItems);
+            const userId = user.id || user._id;
+            const res = await api.get(`/items?user=${userId}`);
+            setMyItems(res.data);
         } catch (err) {
             toast.error("Failed to load your items");
         } finally {

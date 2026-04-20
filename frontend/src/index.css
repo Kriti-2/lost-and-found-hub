@@ -17,12 +17,20 @@
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-full: 9999px;
+
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape on iOS */
 }
 
 html, body {
@@ -36,15 +44,23 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
   overflow-x: hidden;
   position: relative;
-  /* Quirky Thematic Emoji Cursor */
-  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%2361509D' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='9' r='6' fill='%23F0E6FF'/><line x1='21' y1='21' x2='13.5' y2='13.5' stroke='%2361509D' stroke-width='4'/></svg>") 9 9, auto;
+  /* Optimized Cursor SVG - Hidden on touch devices */
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2361509D' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='9' r='5' fill='%23F0E6FF'/><line x1='21' y1='21' x2='13' y2='13' stroke='%2361509D' stroke-width='3'/></svg>") 9 9, auto;
+}
+
+@media (pointer: coarse) {
+  body { cursor: auto !important; }
+  * { cursor: auto !important; }
 }
 
 /* Custom Pointer Cursor for clickable elements */
-a, button, .btn, .chat-list-item, .hover-link, [role="button"], label {
-  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%2361509D' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='9' r='6' fill='%2361509D'/><path d='M6 9 l2 2 l4 -4' stroke='%23ffffff' stroke-width='2'/><line x1='21' y1='21' x2='13.5' y2='13.5' stroke='%2361509D' stroke-width='4'/></svg>") 9 9, pointer !important;
+@media (hover: hover) {
+  a, button, .btn, .chat-list-item, .hover-link, [role="button"], label {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%2361509D' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='9' cy='9' r='6' fill='%2361509D'/><path d='M6 9 l2 2 l4 -4' stroke='%23ffffff' stroke-width='2'/><line x1='21' y1='21' x2='13.5' y2='13.5' stroke='%2361509D' stroke-width='4'/></svg>") 9 9, pointer !important;
+  }
 }
 
 /* Revert inputs and selects to native standard OS cursors */
@@ -55,35 +71,47 @@ select {
   cursor: pointer !important;
 }
 
-/* Background blob decorations */
+/* Background blob decorations - Optimized for performance */
 .bg-blob {
   position: fixed;
   border-radius: 50%;
   filter: blur(80px);
   z-index: -1;
-  opacity: 0.6;
+  opacity: 0.4;
+  will-change: transform;
+  pointer-events: none;
 }
 .bg-blob-1 {
   background: var(--color-tertiary);
-  width: 400px;
-  height: 400px;
+  width: min(400px, 60vw);
+  height: min(400px, 60vw);
   top: -100px;
   right: -100px;
-  animation: float 10s ease-in-out infinite;
+  animation: float 15s ease-in-out infinite;
 }
 .bg-blob-2 {
   background: var(--color-secondary);
-  width: 500px;
-  height: 500px;
+  width: min(500px, 70vw);
+  height: min(500px, 70vw);
   bottom: -150px;
   left: -150px;
-  animation: float 12s ease-in-out infinite reverse;
+  animation: float 18s ease-in-out infinite reverse;
+}
+
+@media (max-width: 768px) {
+  .bg-blob {
+    filter: blur(40px); /* Reduced blur for mobile performance */
+    opacity: 0.3;
+  }
 }
 
 .app-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  /* Add safe area padding for modern iPhones */
+  padding-left: calc(20px + env(safe-area-inset-left));
+  padding-right: calc(20px + env(safe-area-inset-right));
 }
 
 /* Glassmorphism Utils */
@@ -102,6 +130,7 @@ select {
   z-index: 100;
   background: rgba(242, 234, 224, 0.7);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.8);
 }
 
@@ -116,6 +145,7 @@ a {
   text-decoration: none;
   color: inherit;
   transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent; /* Remove active highlight on mobile */
 }
 
 /* Buttons */
@@ -123,7 +153,7 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 24px;
+  padding: 12px 24px; /* Increased for mobile touch target */
   border-radius: var(--radius-full);
   font-weight: 500;
   font-family: 'Outfit', sans-serif;
@@ -132,6 +162,8 @@ a {
   border: none;
   font-size: 1rem;
   gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .btn-primary {
@@ -140,9 +172,11 @@ a {
   box-shadow: var(--shadow-md);
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 20px -3px rgba(155, 142, 199, 0.3);
+@media (hover: hover) {
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 20px -3px rgba(155, 142, 199, 0.3);
+  }
 }
 
 .btn-secondary {
@@ -150,9 +184,11 @@ a {
   color: var(--color-text);
 }
 
-.btn-secondary:hover {
-  transform: translateY(-2px);
-  background: #a3c7ce;
+@media (hover: hover) {
+  .btn-secondary:hover {
+    transform: translateY(-2px);
+    background: #a3c7ce;
+  }
 }
 
 .btn-outline {
@@ -161,9 +197,11 @@ a {
   color: var(--color-primary);
 }
 
-.btn-outline:hover {
-  background: var(--color-primary);
-  color: white;
+@media (hover: hover) {
+  .btn-outline:hover {
+    background: var(--color-primary);
+    color: white;
+  }
 }
 
 /* Input Fields */
@@ -181,14 +219,15 @@ a {
 }
 
 .input-field {
-  padding: 12px 16px;
+  padding: 14px 16px; /* Increased for mobile */
   border-radius: var(--radius-md);
   border: 1px solid rgba(155, 142, 199, 0.3);
   background: rgba(255, 255, 255, 0.8);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 16px; /* Crucial: 16px prevents iOS initial zoom on focus */
   transition: all 0.3s ease;
   outline: none;
+  -webkit-appearance: none; /* Uniform appearance on iOS */
 }
 
 .input-field:focus {
@@ -221,22 +260,28 @@ a {
 .interactive-card {
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-.interactive-card:hover {
-  transform: translateY(-8px) scale(1.02) !important;
-  box-shadow: 0 20px 40px -5px rgba(155, 142, 199, 0.4) !important;
+
+@media (hover: hover) {
+  .interactive-card:hover {
+    transform: translateY(-8px) scale(1.02) !important;
+    box-shadow: 0 20px 40px -5px rgba(155, 142, 199, 0.4) !important;
+  }
 }
 
 /* Image zoom effect on hover for cards */
 .card-img-zoom {
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-.interactive-card:hover .card-img-zoom {
-  transform: scale(1.08) !important;
+
+@media (hover: hover) {
+  .interactive-card:hover .card-img-zoom {
+    transform: scale(1.08) !important;
+  }
 }
 
 /* Button Active Press Effect */
 .btn:active {
-  transform: scale(0.94) !important;
+  transform: scale(0.96) !important;
 }
 
 /* Hover Underline effect for links */
@@ -335,11 +380,14 @@ a {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   border-left: 4px solid transparent;
 }
-.chat-list-item:hover {
-  background: rgba(255, 255, 255, 0.4);
-  border-left-color: var(--color-tertiary);
-  transform: translateX(4px);
+@media (hover: hover) {
+  .chat-list-item:hover {
+    background: rgba(255, 255, 255, 0.4);
+    border-left-color: var(--color-tertiary);
+    transform: translateX(4px);
+  }
 }
+
 .chat-list-item.selected {
   background: rgba(255, 255, 255, 0.8) !important;
   border-left-color: var(--color-primary);
@@ -364,39 +412,38 @@ a {
   /* Scale down container padding */
   .app-container {
     padding: 0 15px !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
   }
   
   /* Shrink heading text */
-  h1 { font-size: 2rem !important; }
-  h2 { font-size: 1.5rem !important; }
-  h3 { font-size: 1.25rem !important; }
+  h1 { font-size: 1.8rem !important; }
+  h2 { font-size: 1.4rem !important; }
+  h3 { font-size: 1.15rem !important; }
   
   /* Adjust blob size and position to prevent overflow */
   .bg-blob-1 {
-    width: 200px;
-    height: 200px;
-    top: -50px;
-    right: -50px;
+    width: 180px;
+    height: 180px;
+    top: -40px;
+    right: -40px;
   }
   .bg-blob-2 {
-    width: 250px;
-    height: 250px;
-    bottom: -50px;
-    left: -50px;
+    width: 220px;
+    height: 220px;
+    bottom: -40px;
+    left: -40px;
   }
   
   /* Buttons can be slightly more compact */
   .btn {
-    padding: 8px 18px;
-    font-size: 0.9rem;
+    padding: 10px 20px;
+    font-size: 0.95rem;
   }
   
-  /* Adjust specific elements via their inline-style equivalents if needed,
-     or provide utility overrides */
   .mobile-flex-col {
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 10px !important;
+    gap: 12px !important;
   }
   .mobile-nav-hide {
     display: none !important;
@@ -408,5 +455,20 @@ a {
   .mobile-text-center {
     text-align: center !important;
   }
+  
+  /* Glass card adjustments for mobile */
+  .glass-card {
+    border-radius: 16px;
+    padding: 20px !important;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .app-container {
+      padding: 0 12px !important;
+  }
+  h1 { font-size: 1.6rem !important; }
+  .btn { width: 100%; } /* Stack buttons on very small screens */
 }
 

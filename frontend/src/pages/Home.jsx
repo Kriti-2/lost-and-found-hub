@@ -13,18 +13,27 @@ const Home = () => {
     
     // Filters
     const [search, setSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [typeFilter, setTypeFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
 
+    // Debounce search input
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 500); // 500ms debounce
+        return () => clearTimeout(timer);
+    }, [search]);
+
     useEffect(() => {
         fetchItems();
-    }, [search, typeFilter, statusFilter]);
+    }, [debouncedSearch, typeFilter, statusFilter]);
 
     const fetchItems = async () => {
         try {
             setLoading(true);
             let queryParams = [];
-            if (search) queryParams.push(`search=${search}`);
+            if (debouncedSearch) queryParams.push(`search=${debouncedSearch}`);
             if (typeFilter) queryParams.push(`type=${typeFilter}`);
             if (statusFilter) queryParams.push(`status=${statusFilter}`);
             

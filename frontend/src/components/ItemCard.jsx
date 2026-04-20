@@ -1,9 +1,10 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Calendar, Tag, AlertTriangle } from 'lucide-react';
 import api, { IMAGE_BASE_URL } from '../utils/api';
 import { toast } from 'react-toastify';
 
-const ItemCard = ({ item }) => {
+const ItemCard = React.memo(({ item }) => {
     
     // Helper to format date
     const formatDate = (dateString) => {
@@ -30,6 +31,7 @@ const ItemCard = ({ item }) => {
                         alt={item.name} 
                         className="card-img-zoom"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        loading="lazy"
                         onError={(e) => {
                             e.target.onerror = null; // prevents looping
                             e.target.src = 'https://placehold.co/600x400/f3f4f6/a8a29e?text=Image+Unavailable';
@@ -82,6 +84,6 @@ const ItemCard = ({ item }) => {
             </div>
         </div>
     );
-};
+});
 
 export default ItemCard;

@@ -22,7 +22,7 @@ const router = express.Router();
 // @desc    Get all items (with filters and search)
 router.get('/', async (req, res) => {
     try {
-        const { search, type, status } = req.query;
+        const { search, type, status, user: userId } = req.query;
         let query = {};
 
         if (search) {
@@ -35,6 +35,7 @@ router.get('/', async (req, res) => {
 
         if (type) query.type = type;
         if (status) query.status = status;
+        if (userId) query.user = userId;
         
         // Hide reported/flagged items from general view
         query.isHidden = { $ne: true };

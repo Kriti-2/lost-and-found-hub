@@ -131,20 +131,22 @@ const Login = () => {
                     justifyContent: 'center',
                     alignItems: 'flex-start',
                     overflowY: 'auto',
-                    overflowX: 'hidden'
+                    overflowX: 'hidden',
+                    WebkitOverflowScrolling: 'touch' /* Smooth momentum scrolling on iOS */
                 }}>
                     <div style={{ 
                         maxWidth: '430px', 
                         width: '100%', 
                         minHeight: '100dvh',
                         margin: 'auto',
-                        padding: '40px 20px', 
+                        padding: 'calc(40px + env(safe-area-inset-top)) 20px calc(40px + env(safe-area-inset-bottom))', 
                         textAlign: 'center', 
                         display: 'flex', 
                         flexDirection: 'column', 
                         alignItems: 'center',
                         justifyContent: 'center',
-                        position: 'relative'
+                        position: 'relative',
+                        boxSizing: 'border-box'
                     }}>
 
                         {/* Plant Branches Mockup (Bottom Left & Right) */}
@@ -167,42 +169,42 @@ const Login = () => {
                                 }} onError={(e) => { e.target.style.display = 'none'; }} />
                             </div>
                             
-                            <h1 style={{ color: '#1B1446', fontSize: 'clamp(2.4rem, 10vw, 3.2rem)', fontWeight: 800, margin: '0 0 5px', letterSpacing: '-1px', position: 'relative', zIndex: 5 }}>Campus <span style={{ color: '#8874C2', fontWeight: 700 }}>Find</span></h1>
+                            <h1 style={{ color: '#1B1446', fontSize: 'clamp(2.2rem, 9vw, 3rem)', fontWeight: 800, margin: '0 0 5px', letterSpacing: '-1px', position: 'relative', zIndex: 5 }}>Campus <span style={{ color: '#8874C2', fontWeight: 700 }}>Find</span></h1>
                             
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '35px' }}>
                                 <span style={{ width: '35px', height: '2px', background: '#F8CFAD', borderRadius: '2px' }}></span>
-                                <span style={{ color: '#1B1446', fontSize: '1.05rem', fontWeight: '500' }}>Lost something? Find it here.</span>
+                                <span style={{ color: '#1B1446', fontSize: '0.95rem', fontWeight: '500' }}>Lost something? Find it here.</span>
                                 <span style={{ width: '35px', height: '2px', background: '#F8CFAD', borderRadius: '2px' }}></span>
                             </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: '40px', gap: '8px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: '40px', gap: '6px' }}>
                                 <div style={{ flex: '1', textAlign: 'center' }}>
                                     <div style={{ width: '60px', height: '60px', background: '#EAE2F3', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#2B235A' }}>
-                                        <Search size={26} strokeWidth={1.5} />
+                                        <Search size={22} strokeWidth={2} />
                                     </div>
-                                    <h4 style={{ color: '#1B1446', fontSize: '0.85rem', marginBottom: '6px', fontWeight: '700' }}>Easy to Find</h4>
-                                    <p style={{ color: '#6B6684', fontSize: '0.75rem', lineHeight: '1.4' }}>Search and discover<br/>lost items.</p>
+                                    <h4 style={{ color: '#1B1446', fontSize: '0.8rem', marginBottom: '4px', fontWeight: '700' }}>Easy to Find</h4>
+                                    <p style={{ color: '#6B6684', fontSize: '0.7rem', lineHeight: '1.4' }}>Search and discover<br/>lost items.</p>
                                 </div>
                                 <div style={{ flex: '1', textAlign: 'center' }}>
                                     <div style={{ width: '60px', height: '60px', background: '#EAE2F3', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#2B235A' }}>
-                                        <Shield size={26} strokeWidth={1.5} />
+                                        <Shield size={22} strokeWidth={2} />
                                     </div>
-                                    <h4 style={{ color: '#1B1446', fontSize: '0.85rem', marginBottom: '6px', fontWeight: '700' }}>Safe & Secure</h4>
-                                    <p style={{ color: '#6B6684', fontSize: '0.75rem', lineHeight: '1.4' }}>Verified users and<br/>secure recovery.</p>
+                                    <h4 style={{ color: '#1B1446', fontSize: '0.8rem', marginBottom: '4px', fontWeight: '700' }}>Safe & Secure</h4>
+                                    <p style={{ color: '#6B6684', fontSize: '0.7rem', lineHeight: '1.4' }}>Verified users and<br/>secure recovery.</p>
                                 </div>
                                 <div style={{ flex: '1', textAlign: 'center' }}>
                                     <div style={{ width: '60px', height: '60px', background: '#EAE2F3', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#2B235A' }}>
-                                        <HeartHandshake size={26} strokeWidth={1.5} />
+                                        <HeartHandshake size={22} strokeWidth={2} />
                                     </div>
-                                    <h4 style={{ color: '#1B1446', fontSize: '0.85rem', marginBottom: '6px', fontWeight: '700' }}>Reunite & Return</h4>
-                                    <p style={{ color: '#6B6684', fontSize: '0.75rem', lineHeight: '1.4' }}>Help others and get<br/>what's yours back.</p>
+                                    <h4 style={{ color: '#1B1446', fontSize: '0.8rem', marginBottom: '4px', fontWeight: '700' }}>Reunite</h4>
+                                    <p style={{ color: '#6B6684', fontSize: '0.7rem', lineHeight: '1.4' }}>Help others and get<br/>what's yours back.</p>
                                 </div>
                             </div>
 
                             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '15px' }}>
                                 <button 
                                     onClick={() => { setStep('main'); setIsRegistering(false); }}
-                                    style={{ width: '100%', padding: '18px', background: '#8874C2', color: 'white', border: 'none', borderRadius: '16px', fontSize: '1.1rem', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'transform 0.2s', fontFamily: 'inherit' }}
+                                    style={{ width: '100%', padding: '18px', background: '#8874C2', color: 'white', border: 'none', borderRadius: '16px', fontSize: '1.1rem', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'transform 0.2s, background 0.2s', fontFamily: 'inherit', WebkitTapHighlightColor: 'transparent' }}
                                     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                                     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                 >
@@ -210,7 +212,7 @@ const Login = () => {
                                 </button>
                                 <button 
                                     onClick={() => { setStep('main'); setIsRegistering(true); }}
-                                    style={{ width: '100%', padding: '18px', background: 'transparent', color: '#1B1446', border: '1px solid #8874C2', borderRadius: '16px', fontSize: '1.1rem', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'background 0.2s', fontFamily: 'inherit' }}
+                                    style={{ width: '100%', padding: '18px', background: 'transparent', color: '#1B1446', border: '1px solid #8874C2', borderRadius: '16px', fontSize: '1.1rem', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', transition: 'background 0.2s', fontFamily: 'inherit', WebkitTapHighlightColor: 'transparent' }}
                                     onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(136, 116, 194, 0.05)'}
                                     onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                 >
@@ -218,7 +220,7 @@ const Login = () => {
                                 </button>
                             </div>
 
-                            <p style={{ marginTop: '35px', color: '#4A4565', fontSize: '0.85rem', fontWeight: '500' }}>
+                            <p style={{ marginTop: '35px', color: '#4A4565', fontSize: '0.85rem', fontWeight: '500', paddingBottom: '10px' }}>
                                 Join your campus community and make a difference. 💜
                             </p>
                         </div>

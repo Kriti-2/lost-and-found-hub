@@ -1,18 +1,26 @@
+import React, { useContext, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
-import { useContext } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import CreateItem from './pages/CreateItem';
-import ItemDetails from './pages/ItemDetails';
-import Inbox from './pages/Inbox';
 import PrivateRoute from './components/PrivateRoute';
-import AdminPanel from './pages/AdminPanel';
+
+// Lazy load pages
+const Home = lazy(() => import('./pages/Home'));
+const Login = lazy(() => import('./pages/Login'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const CreateItem = lazy(() => import('./pages/CreateItem'));
+const ItemDetails = lazy(() => import('./pages/ItemDetails'));
+const Inbox = lazy(() => import('./pages/Inbox'));
+const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+
+const PageLoader = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '60vh', gap: '20px' }}>
+        <div className="loading-spinner" style={{ width: '40px', height: '40px', border: '3px solid rgba(136, 116, 194, 0.1)', borderTop: '3px solid #8874C2', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+    </div>
+);
 
 const RootRoute = () => {
     const { user, loading } = useContext(AuthContext);
@@ -41,21 +49,23 @@ function App() {
         <Navbar />
         
         <main>
-          <Routes>
-            <Route path="/" element={<RootRoute />} />
-            <Route path="/explore" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/items/:id" element={<ItemDetails />} />
-            
-            {/* Protected Routes */}
-            <Route element={<PrivateRoute />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/create" element={<CreateItem />} />
-                <Route path="/edit/:id" element={<CreateItem />} />
-                <Route path="/inbox" element={<Inbox />} />
-                <Route path="/admin" element={<AdminPanel />} />
-            </Route>
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<RootRoute />} />
+              <Route path="/explore" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/items/:id" element={<ItemDetails />} />
+              
+              {/* Protected Routes */}
+              <Route element={<PrivateRoute />}>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/create" element={<CreateItem />} />
+                  <Route path="/edit/:id" element={<CreateItem />} />
+                  <Route path="/inbox" element={<Inbox />} />
+                  <Route path="/admin" element={<AdminPanel />} />
+              </Route>
+            </Routes>
+          </Suspense>
         </main>
         
         <ToastContainer position="bottom-right" theme="colored" />
