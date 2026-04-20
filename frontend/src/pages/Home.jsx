@@ -109,19 +109,17 @@ const Home = () => {
             `}</style>
             
             {/* Hero Section */}
-            <div className="glass-card animate-fade-in hero-container" style={{ borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
+            <div className="glass-card animate-fade-in hero-container" style={{ borderRadius: '24px', position: 'relative', overflow: 'hidden', backgroundColor: 'rgba(255, 255, 255, 0.9)' }}>
                 
-                {/* Floating Aesthetic Elements (Darker and More Numerous) */}
-                <div className="float-icon" style={{ right: '10%', top: '5%', opacity: 0.4, fontSize: '4.5rem', animationDelay: '0s' }}>🔑</div>
-                <div className="float-icon" style={{ right: '3%', bottom: '15%', opacity: 0.35, fontSize: '5rem', animationDelay: '-2s', animationDuration: '8s' }}>📱</div>
-                <div className="float-icon hide-on-mobile" style={{ right: '25%', bottom: '10%', opacity: 0.3, fontSize: '3.5rem', animationDelay: '-4s', animationDuration: '10s' }}>⌚</div>
-                <div className="float-icon" style={{ right: '40%', top: '8%', opacity: 0.35, fontSize: '3rem', animationDelay: '-1s', animationDuration: '7s' }}>👓</div>
-                <div className="float-icon hide-on-mobile" style={{ left: '55%', top: '25%', opacity: 0.25, fontSize: '2.5rem', animationDelay: '-3s', animationDuration: '9s' }}>🎒</div>
-                <div className="float-icon hide-on-mobile" style={{ left: '65%', bottom: '15%', opacity: 0.3, fontSize: '3rem', animationDelay: '-5s', animationDuration: '6s' }}>📚</div>
-                <div className="float-icon hide-on-mobile" style={{ right: '18%', top: '45%', opacity: 0.25, fontSize: '2.5rem', animationDelay: '-1.5s', animationDuration: '8.5s' }}>🎧</div>
+                {/* Simplified Floating Elements */}
+                <div className="hide-on-mobile" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 1 }}>
+                    <div className="float-icon" style={{ right: '10%', top: '10%', opacity: 0.15, fontSize: '4rem' }}>🔑</div>
+                    <div className="float-icon" style={{ right: '5%', bottom: '20%', opacity: 0.15, fontSize: '4.5rem', animationDelay: '-2s' }}>📱</div>
+                    <div className="float-icon" style={{ left: '60%', top: '15%', opacity: 0.1, fontSize: '3rem', animationDelay: '-4s' }}>⌚</div>
+                </div>
                 
-                {/* Soft glowing blob inside the hero */}
-                <div style={{ position: 'absolute', right: '-10%', top: '-20%', width: '400px', height: '400px', background: 'radial-gradient(circle, var(--color-secondary) 0%, rgba(255,255,255,0) 70%)', opacity: 0.6, zIndex: 0, borderRadius: '50%' }}></div>
+                {/* Subtler glowing blob inside the hero */}
+                <div style={{ position: 'absolute', right: '-5%', top: '-10%', width: '300px', height: '300px', background: 'radial-gradient(circle, var(--color-secondary) 0%, rgba(255,255,255,0) 70%)', opacity: 0.3, zIndex: 0, borderRadius: '50%' }}></div>
                 <div style={{ position: 'absolute', right: '10%', bottom: '-30%', width: '350px', height: '350px', background: 'radial-gradient(circle, var(--color-tertiary) 0%, rgba(255,255,255,0) 70%)', opacity: 0.4, zIndex: 0, borderRadius: '50%' }}></div>
 
                 <div style={{ maxWidth: '600px', position: 'relative', zIndex: 2 }}>
@@ -234,8 +232,8 @@ const Home = () => {
                 </div>
             ) : (
                 <div className="discovery-grid">
-                    {items.map((item, idx) => (
-                        <div key={item._id} className={`animate-fade-in delay-${(idx % 3 + 1) * 100}`}>
+                    {items.map((item) => (
+                        <div key={item._id} className="animate-fade-in">
                             <ItemCard item={item} />
                         </div>
                     ))}

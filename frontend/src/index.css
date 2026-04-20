@@ -75,33 +75,34 @@ select {
 .bg-blob {
   position: fixed;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: none; /* Removed heavy blur */
   z-index: -1;
-  opacity: 0.4;
+  opacity: 0.15; /* Subtler without blur */
   will-change: transform;
   pointer-events: none;
+  background-image: radial-gradient(circle, currentColor 0%, transparent 70%); /* Faux blur using gradient */
 }
 .bg-blob-1 {
-  background: var(--color-tertiary);
-  width: min(400px, 60vw);
-  height: min(400px, 60vw);
-  top: -100px;
-  right: -100px;
-  animation: float 15s ease-in-out infinite;
+  color: var(--color-tertiary);
+  width: min(300px, 50vw);
+  height: min(300px, 50vw);
+  top: -50px;
+  right: -50px;
+  animation: float 20s ease-in-out infinite;
 }
 .bg-blob-2 {
-  background: var(--color-secondary);
-  width: min(500px, 70vw);
-  height: min(500px, 70vw);
-  bottom: -150px;
-  left: -150px;
-  animation: float 18s ease-in-out infinite reverse;
+  color: var(--color-secondary);
+  width: min(400px, 60vw);
+  height: min(400px, 60vw);
+  bottom: -100px;
+  left: -100px;
+  animation: float 25s ease-in-out infinite reverse;
 }
 
 @media (max-width: 768px) {
   .bg-blob {
-    filter: blur(40px); /* Reduced blur for mobile performance */
-    opacity: 0.3;
+    opacity: 0.1;
+    animation: none !important; /* Disable animations on mobile to save battery and reduce hang */
   }
 }
 
@@ -114,12 +115,12 @@ select {
   padding-right: calc(20px + env(safe-area-inset-right));
 }
 
-/* Glassmorphism Utils */
+/* Glassmorphism Utils - Optimized for performance */
 .glass-card {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.85); /* More opaque */
+  backdrop-filter: blur(8px); /* Reduced blur */
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-glass);
 }
@@ -128,10 +129,10 @@ select {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(242, 234, 224, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(242, 234, 224, 0.9); /* More opaque */
+  backdrop-filter: blur(8px); /* Reduced blur */
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(155, 142, 199, 0.1);
 }
 
 /* Typography */
