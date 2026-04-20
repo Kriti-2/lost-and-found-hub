@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import ItemCard from '../components/ItemCard';
 import { Search, Filter, Loader } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { AuthContext } from '../context/AuthContext';
 import lostIllustration from '../assets/illustrations/lost_item.png';
 import foundIllustration from '../assets/illustrations/found_item.png';
 
 const Home = () => {
+    const { user } = useContext(AuthContext);
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     
@@ -27,7 +29,7 @@ const Home = () => {
 
     useEffect(() => {
         fetchItems();
-    }, [debouncedSearch, typeFilter, statusFilter]);
+    }, [debouncedSearch, typeFilter, statusFilter, user]); // Added user as dependency
 
     const fetchItems = async () => {
         try {
