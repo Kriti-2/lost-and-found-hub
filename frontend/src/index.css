@@ -117,10 +117,8 @@ select {
 
 /* Glassmorphism Utils - Optimized for performance */
 .glass-card {
-  background: rgba(255, 255, 255, 0.85); /* More opaque */
-  backdrop-filter: blur(8px); /* Reduced blur */
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.95); /* Nearly solid for mobile */
+  border: 1px solid rgba(155, 142, 199, 0.2);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-glass);
 }
@@ -129,10 +127,21 @@ select {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(242, 234, 224, 0.9); /* More opaque */
-  backdrop-filter: blur(8px); /* Reduced blur */
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(242, 234, 224, 0.98); /* Nearly solid for mobile */
   border-bottom: 1px solid rgba(155, 142, 199, 0.1);
+}
+
+@media (hover: hover) {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .glass-nav {
+    background: rgba(242, 234, 224, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 
 /* Typography */
