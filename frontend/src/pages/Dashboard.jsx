@@ -14,8 +14,10 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchMyItems();
-    }, []);
+        if (user) {
+            fetchMyItems();
+        }
+    }, [user]);
 
     const fetchMyItems = async () => {
         try {
