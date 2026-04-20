@@ -11,7 +11,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@tensorflow/tfjs": "^4.22.0",
     "axios": "^1.15.1",
     "bad-words": "^3.0.4",
     "bcryptjs": "^3.0.3",
@@ -21,13 +20,11 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.2",
     "google-auth-library": "^10.6.2",
-    "jpeg-js": "^0.4.4",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.4.1",
     "multer": "^2.1.1",
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^8.0.5",
-    "nsfwjs": "^4.3.0",
     "socket.io": "^4.8.3"
   }
 }

@@ -4,7 +4,6 @@ const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 const { upload, cloudinary } = require('../middleware/upload');
 const { sendMail } = require('../utils/mailer');
-const { checkImageNSFW } = require('../utils/moderation');
 const Filter = require('bad-words');
 const filter = new Filter();
 
