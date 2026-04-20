@@ -65,16 +65,6 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
         let imageUrl = '';
         if (req.file) {
             imageUrl = req.file.path;
-
-            // Backend Image Moderation Check
-            const isNSFW = await checkImageNSFW(imageUrl);
-            if (isNSFW) {
-                // Delete from cloudinary immediately
-                if (req.file.filename) {
-                    await cloudinary.uploader.destroy(req.file.filename);
-                }
-                return res.status(400).json({ message: 'Inappropriate image detected. Post rejected.' });
-            }
         }
 
         const newItem = new Item({
@@ -91,35 +81,53 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
         const savedItem = await newItem.save();
 
         // ------------------
-        // Matching Algorithm
+        // Background Tasks (NSFW Check & Matching)
         // ------------------
-        // If a "Found" item is posted, notify users who lost something with a similar name
-        if (savedItem.type === 'Found' && name) {
-            // Split the post's name into keywords (e.g. "blue watch" -> "blue|watch")
-            const keywords = name.split(' ').filter(word => word.length > 2).join('|');
-            
-            if (keywords.length > 0) {
-                const regexPattern = new RegExp(keywords, 'i');
-                const matchingLostItems = await Item.find({
-                    type: 'Lost',
-                    name: { $regex: regexPattern }
-                }).populate('user');
-
-                for (let lostItem of matchingLostItems) {
-                    if (lostItem.user && lostItem.user.email) {
-                        const subject = "Good News: A Potential Match for Your Lost Item!";
-                        const text = `Hello ${lostItem.user.name},\n\nAn item named "${savedItem.name}" was just found and posted on the hub. This may match your lost item "${lostItem.name}"!\n\nLog in to check it out.`;
-                        const html = `<h3>Potential Match Alert!</h3>
-                            <p>Hello ${lostItem.user.name},</p>
-                            <p>Someone just posted a <strong>Found</strong> item named <em>"${savedItem.name}"</em>.</p>
-                            <p>This looks similar to your lost item <em>"${lostItem.name}"</em>!</p>
-                            <p>Please log in to the Lost & Found Hub to see if this is yours.</p>`;
-                        
-                        await sendMail(lostItem.user.email, subject, text, html);
+        // Fire and forget to improve response time and prevent timeouts
+        setImmediate(async () => {
+            try {
+                // Secondary Backend Image Moderation (Already checked on frontend)
+                if (imageUrl) {
+                    const isNSFW = await checkImageNSFW(imageUrl);
+                    if (isNSFW) {
+                        savedItem.isHidden = true;
+                        await savedItem.save();
+                        if (req.file && req.file.filename) {
+                            await cloudinary.uploader.destroy(req.file.filename);
+                        }
+                        console.log(`NSFW detected on backend for item ${savedItem._id}. Item hidden.`);
                     }
                 }
+
+                // Matching Algorithm: If a "Found" item is posted, notify users who lost something similar
+                if (savedItem.type === 'Found' && name) {
+                    const keywords = name.split(' ').filter(word => word.length > 2).join('|');
+                    if (keywords.length > 0) {
+                        const regexPattern = new RegExp(keywords, 'i');
+                        const matchingLostItems = await Item.find({
+                            type: 'Lost',
+                            name: { $regex: regexPattern }
+                        }).populate('user');
+
+                        for (let lostItem of matchingLostItems) {
+                            if (lostItem.user && lostItem.user.email) {
+                                const subject = "Good News: A Potential Match for Your Lost Item!";
+                                const text = `Hello ${lostItem.user.name},\n\nAn item named "${savedItem.name}" was just found and posted on the hub. This may match your lost item "${lostItem.name}"!\n\nLog in to check it out.`;
+                                const html = `<h3>Potential Match Alert!</h3>
+                                    <p>Hello ${lostItem.user.name},</p>
+                                    <p>Someone just posted a <strong>Found</strong> item named <em>"${savedItem.name}"</em>.</p>
+                                    <p>This looks similar to your lost item <em>"${lostItem.name}"</em>!</p>
+                                    <p>Please log in to the Lost & Found Hub to see if this is yours.</p>`;
+                                
+                                await sendMail(lostItem.user.email, subject, text, html);
+                            }
+                        }
+                    }
+                }
+            } catch (bgErr) {
+                console.error("Background processing error:", bgErr);
             }
-        }
+        });
 
         res.status(201).json(savedItem);
     } catch (err) {

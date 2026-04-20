@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { Upload, Save, ArrowLeft, Camera, ShieldAlert } from 'lucide-react';
 import * as nsfwjs from 'nsfwjs';
 import * as tf from '@tensorflow/tfjs';
+import { compressImage } from '../utils/imageUtils';
 
 const CreateItem = () => {
     const { id } = useParams();
@@ -24,6 +25,7 @@ const CreateItem = () => {
     const [loading, setLoading] = useState(false);
     const [nsfwModel, setNsfwModel] = useState(null);
     const [isScanning, setIsScanning] = useState(false);
+    const [scanningStatus, setScanningStatus] = useState('');
 
     useEffect(() => {
         const loadModel = async () => {
@@ -82,12 +84,21 @@ const CreateItem = () => {
         e.preventDefault();
         setLoading(true);
 
-        // Security Check: Block Obscene/NSFW Imagery
+        let finalImageFile = imageFile;
+
+        // Security & Optimization: Compress and Block Obscene Content
         if (imageFile) {
             try {
                 setIsScanning(true);
+                setScanningStatus('Compressing...');
+                
+                // 1. Compress Image (Make it smaller for faster scanning and faster upload)
+                finalImageFile = await compressImage(imageFile, 800, 800, 0.7);
+                const compressedPreview = URL.createObjectURL(finalImageFile);
+
+                setScanningStatus('Scanning security...');
                 const img = new Image();
-                img.src = imagePreview;
+                img.src = compressedPreview;
                 await new Promise((resolve, reject) => { 
                     img.onload = resolve; 
                     img.onerror = () => reject(new Error("Failed to load image for scanning"));
@@ -120,13 +131,14 @@ const CreateItem = () => {
                     return;
                 }
             } catch (scanError) {
-                console.error("Content scan failed", scanError);
+                console.error("Content scan/compress failed", scanError);
                 toast.error("Could not verify image security. Please try a different image.");
                 setLoading(false);
                 setIsScanning(false);
                 return;
             } finally {
                 setIsScanning(false);
+                setScanningStatus('');
             }
         }
 
@@ -134,8 +146,8 @@ const CreateItem = () => {
         Object.keys(formData).forEach(key => {
             data.append(key, formData[key]);
         });
-        if (imageFile) {
-            data.append('image', imageFile);
+        if (finalImageFile) {
+            data.append('image', finalImageFile);
         }
 
         try {
@@ -263,7 +275,7 @@ const CreateItem = () => {
                     </div>
 
                     <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '30px', padding: '15px' }} disabled={loading || isScanning}>
-                        <Save size={20} /> {loading ? (isScanning ? 'Security Scanning...' : 'Saving...') : isEditMode ? 'Update Item' : 'Publish Listing'}
+                        <Save size={20} /> {loading ? (isScanning ? scanningStatus : 'Saving...') : isEditMode ? 'Update Item' : 'Publish Listing'}
                     </button>
                 </form>
             </div>
