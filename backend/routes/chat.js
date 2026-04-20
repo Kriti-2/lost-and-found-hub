@@ -11,8 +11,12 @@ const router = express.Router();
 // @desc    Get all chat rooms for the logged in user
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        // Find chats where the user is a participant and has not hidden them
-        const rawChats = await Chat.find({ 
+        // 1. Performance Cleanup: Permanently delete chats that have no item linked (waste data)
+        // This keeps the DB lean and fast
+        await Chat.deleteMany({ item: null });
+
+        // 2. Fetch chats for the user
+        const chats = await Chat.find({ 
             participants: req.user.id,
             hiddenBy: { $nin: [req.user.id] } 
         })
@@ -20,18 +24,8 @@ router.get('/', authMiddleware, async (req, res) => {
             .populate('item', 'name image status')
             .sort({ 'messages.timestamp': -1 });
 
-        // Filter out chats where the item was deleted (orphaned chats)
-        // We also mark them as hidden so they don't show up in future queries either
-        const validChats = [];
-        for (const chat of rawChats) {
-            if (!chat.item) {
-                // Auto-hide orphaned chat
-                chat.hiddenBy.push(req.user.id);
-                await chat.save();
-            } else {
-                validChats.push(chat);
-            }
-        }
+        // Double check for any null items that might have survived deletion in the current request
+        const validChats = chats.filter(chat => chat.item !== null);
 
         res.json(validChats);
     } catch (err) {

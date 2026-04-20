@@ -220,6 +220,13 @@ router.get('/me', authMiddleware, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-__v');
         if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        // AUTO-CLEANUP: Keep only the latest 50 notifications to prevent data bloat
+        if (user.notifications.length > 50) {
+            user.notifications = user.notifications.slice(-50);
+            await user.save();
+        }
+        
         res.json(user);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -305,6 +312,21 @@ router.delete('/notifications/:id', authMiddleware, async (req, res) => {
 
         await user.save();
         res.json(user.notifications);
+    } catch (err) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// @route   DELETE /api/auth/notifications/clear
+// @desc    Clear all notifications (Clean waste data)
+router.delete('/notifications/clear', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        user.notifications = [];
+        await user.save();
+        res.json({ message: 'All notifications cleared', notifications: [] });
     } catch (err) {
         res.status(500).json({ message: 'Server Error' });
     }
