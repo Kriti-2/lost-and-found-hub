@@ -1,22 +1,22 @@
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail', // You can change this if using another provider
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    tls: {
-        rejectUnauthorized: false
-    }
-});
-
 const sendMail = async (to, subject, text, html) => {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
         console.warn("\n⚠️ Email credentials not set in .env!");
         console.log(`[LOCAL DEV OVERRIDE] Email to ${to}\nSubject: ${subject}\nContent: ${text}\n`);
         return true; 
     }
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
 
     try {
         const mailOptions = {
