@@ -17,7 +17,6 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 router.post('/register', async (req, res) => {
     const { email, name, password } = req.body;
 
-    // Removed srmist check
 
     if (!password || password.length < 6) {
         return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
@@ -41,7 +40,7 @@ router.post('/register', async (req, res) => {
                 user.password = hashedPassword;
                 await user.save();
 
-                await sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
+                sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`).catch(console.error);
                 return res.json({ message: 'OTP sent to your email. Please verify.', requiresVerification: true });
             }
         }
@@ -60,7 +59,7 @@ router.post('/register', async (req, res) => {
         });
         await user.save();
 
-        await sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
+        sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`).catch(console.error);
 
         res.json({ message: 'OTP sent to your email. Please verify.', requiresVerification: true });
     } catch (err) {
@@ -112,7 +111,7 @@ router.post('/resend-verification', async (req, res) => {
         user.verificationOTPExpire = Date.now() + 10 * 60 * 1000;
         await user.save();
 
-        await sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
+        sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`).catch(console.error);
 
         res.json({ message: 'New OTP sent to your email.' });
     } catch (err) {
@@ -126,7 +125,6 @@ router.post('/resend-verification', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
-    // Removed srmist check
 
     try {
         let user = await User.findOne({ email });
@@ -146,7 +144,7 @@ router.post('/login', async (req, res) => {
             user.verificationOTPExpire = Date.now() + 10 * 60 * 1000;
             await user.save();
 
-            await sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
+            sendMail(email, "Verify Your Account - Lost & Found Hub", `Your verification OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your verification OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`).catch(console.error);
 
             return res.status(400).json({ message: 'Email not verified. A new OTP has been sent to your email.', unverified: true });
         }
@@ -179,7 +177,7 @@ router.post('/forgot-password', async (req, res) => {
         user.resetPasswordOTPExpire = Date.now() + 10 * 60 * 1000;
         await user.save();
 
-        await sendMail(email, "Reset Your Password - Lost & Found Hub", `Your password reset OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your password reset OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`);
+        sendMail(email, "Reset Your Password - Lost & Found Hub", `Your password reset OTP is: ${otp}. It will expire in 10 minutes.`, `<h3>Your password reset OTP is: <strong>${otp}</strong></h3><p>It will expire in 10 minutes.</p>`).catch(console.error);
 
         res.json({ message: 'Password reset OTP sent to your email.' });
     } catch (err) {

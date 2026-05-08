@@ -11,10 +11,6 @@ const router = express.Router();
 // @desc    Get all chat rooms for the logged in user
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        // 1. Performance Cleanup: Permanently delete chats that have no item linked (waste data)
-        // This keeps the DB lean and fast
-        await Chat.deleteMany({ item: null });
-
         // 2. Fetch chats for the user
         const chats = await Chat.find({ 
             participants: req.user.id,
@@ -118,7 +114,7 @@ router.post('/:id/message', authMiddleware, async (req, res) => {
                 </div>
                 <p>Please log in to the app to continue the conversation.</p>`;
 
-            await sendMail(recipient.email, subject, text, html);
+            sendMail(recipient.email, subject, text, html).catch(console.error);
         }
 
         res.json(newMessage);

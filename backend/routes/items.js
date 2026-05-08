@@ -189,7 +189,7 @@ router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
             if (owner) {
                 const subject = "Item Successfully Returned!";
                 const html = `<h3>Congratulations!</h3><p>Your item <strong>"${item.name}"</strong> has been marked as <strong>Returned</strong>.</p><p>Thank you for using the Lost & Found Hub!</p>`;
-                await sendMail(owner.email, subject, "Your item has been marked as returned.", html);
+                sendMail(owner.email, subject, "Your item has been marked as returned.", html).catch(console.error);
             }
 
             // Notify all claimers
@@ -208,7 +208,7 @@ router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
                     // Email to Claimer
                     const subject = "Update: A Claimed Item has been Returned";
                     const html = `<h3>Item Resolved!</h3><p>Hello ${claimer.name},</p><p>The item <strong>"${item.name}"</strong> that you sent a claim for has been marked as <strong>Returned / Resolved</strong> by the owner.</p><p>If you have already received the item, great! If not, please check the chat for any last details.</p>`;
-                    await sendMail(claimer.email, subject, "An item you claimed is now marked as returned.", html);
+                    sendMail(claimer.email, subject, "An item you claimed is now marked as returned.", html).catch(console.error);
                 }
             }
         }
@@ -280,7 +280,7 @@ router.post('/:id/claim', authMiddleware, async (req, res) => {
             const subject = "Someone Claimed Your Item!";
             const text = `Hello ${ownerUser.name},\n\n${claimerUser.name} has claimed your item "${item.name}".\nMessage: "${message}"\n\nLogin to the hub to chat with them!`;
             const html = `<h3>Item Claim Alert!</h3><p>Hello ${ownerUser.name},</p><p><strong>${claimerUser.name}</strong> has claimed your item <em>"${item.name}"</em>.</p><p><strong>Their Message:</strong> "${message}"</p><p>Please log into the app to check your inbox and reply.</p>`;
-            await sendMail(ownerUser.email, subject, text, html);
+            sendMail(ownerUser.email, subject, text, html).catch(console.error);
         }
 
         // Initialize Chat Room
