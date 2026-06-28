@@ -11,25 +11,9 @@
 **The official, secure Lost & Found system for SRMIST.**  
 _Recover What's Yours. Help Others Find Theirs._
 
-[🌐 Live Demo](https://your-deployment-url.vercel.app) · [🐛 Report Bug](https://github.com/your-username/lost-and-found-hub/issues) · [💡 Request Feature](https://github.com/your-username/lost-and-found-hub/issues)
+[🌐 Live Demo](https://lost-and-found-hub-eta.vercel.app/) · [🐛 Report Bug](https://github.com/Kriti-2/lost-and-found-hub/issues) · [💡 Request Feature](https://github.com/Kriti-2/lost-and-found-hub/issues)
 
 </div>
-
----
-
-## 🖼️ Screenshots
-
-### 🏠 Home Page – Hero & Search
-
-![Home Page Hero](./screenshots/homepage)
-
-### 🔍 Discovery Hub – Browse Items
-
-![Discovery Hub](./screenshots/home_discovery.png)
-
-### 🔐 Login & Register
-
-![Login Page](./screenshots/login_page.png)
 
 ---
 
