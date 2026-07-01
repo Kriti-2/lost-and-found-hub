@@ -5,8 +5,6 @@ import api from '../utils/api';
 import ItemCard from '../components/ItemCard';
 import { Layers, CheckCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
-import lostIllustration from '../assets/illustrations/lost_item.png';
-import foundIllustration from '../assets/illustrations/found_item.png';
 
 const Dashboard = () => {
     const { user } = useContext(AuthContext);

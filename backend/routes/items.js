@@ -2,7 +2,7 @@ const express = require('express');
 const Item = require('../models/Item');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
-const { upload, cloudinary } = require('../middleware/upload');
+const { upload } = require('../middleware/upload');
 const { sendMail } = require('../utils/mailer');
 const Filter = require('bad-words');
 const filter = new Filter();
@@ -164,19 +164,7 @@ router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
         item.status = status || item.status;
 
         if (req.file) {
-            const imageUrl = req.file.path;
-
-            // Backend Image Moderation Check
-            const isNSFW = await checkImageNSFW(imageUrl);
-            if (isNSFW) {
-                // Delete from cloudinary immediately
-                if (req.file.filename) {
-                    await cloudinary.uploader.destroy(req.file.filename);
-                }
-                return res.status(400).json({ message: 'Inappropriate image detected. Update rejected.' });
-            }
-
-            item.image = imageUrl;
+            item.image = req.file.path;
         }
 
         const updatedItem = await item.save();

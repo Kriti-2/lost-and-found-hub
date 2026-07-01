@@ -1,13 +1,16 @@
 const nodemailer = require('nodemailer');
 
-const sendMail = async (to, subject, text, html) => {
+// Create transporter once at module load instead of per-email for connection reuse
+let transporter = null;
+
+const getTransporter = () => {
+    if (transporter) return transporter;
+
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-        console.warn("\n⚠️ Email credentials not set in .env!");
-        console.log(`[LOCAL DEV OVERRIDE] Email to ${to}\nSubject: ${subject}\nContent: ${text}\n`);
-        return true; 
+        return null;
     }
 
-    const transporter = nodemailer.createTransport({
+    transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: process.env.EMAIL_USER,
@@ -15,8 +18,22 @@ const sendMail = async (to, subject, text, html) => {
         },
         tls: {
             rejectUnauthorized: false
-        }
+        },
+        pool: true,       // Use pooled connections for better throughput
+        maxConnections: 3  // Limit concurrent connections
     });
+
+    return transporter;
+};
+
+const sendMail = async (to, subject, text, html) => {
+    const transport = getTransporter();
+
+    if (!transport) {
+        console.warn("\n⚠️ Email credentials not set in .env!");
+        console.log(`[LOCAL DEV OVERRIDE] Email to ${to}\nSubject: ${subject}\nContent: ${text}\n`);
+        return true; 
+    }
 
     try {
         const mailOptions = {
@@ -26,7 +43,7 @@ const sendMail = async (to, subject, text, html) => {
             text,
             html
         };
-        await transporter.sendMail(mailOptions);
+        await transport.sendMail(mailOptions);
         console.log(`✅ Email successfully sent to ${to}`);
         return true;
     } catch (error) {

@@ -52,4 +52,9 @@ const ItemSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+// Indexes for common query patterns
+ItemSchema.index({ createdAt: -1 });              // Default sort order for listings
+ItemSchema.index({ type: 1, isHidden: 1 });       // Filtered queries on type + visibility
+ItemSchema.index({ user: 1, createdAt: -1 });     // Dashboard: user's own items
+
 module.exports = mongoose.model('Item', ItemSchema);

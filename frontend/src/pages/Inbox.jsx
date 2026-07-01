@@ -3,6 +3,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Send, ArrowLeft, Loader2, MessageSquare, Trash2 } from 'lucide-react';
 import api from '../utils/api';
+import { toast } from 'react-toastify';
 
 const Inbox = () => {
     const { user, socket, fetchUnreadCount } = useContext(AuthContext);
@@ -13,6 +14,13 @@ const Inbox = () => {
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const bottomRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+    useEffect(() => {
+        const onResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     useEffect(() => {
         if (!user) {
@@ -110,7 +118,7 @@ const Inbox = () => {
         }
 
         // Push a state to the history stack so the hardware back button has something to pop
-        if (window.innerWidth < 768) {
+        if (isMobile) {
             window.history.pushState({ chatOpen: true }, '');
         }
     };
@@ -177,7 +185,7 @@ const Inbox = () => {
         <div className="glass-card animate-fade-in" style={{ display: 'flex', height: 'calc(100vh - 120px)', gap: '0px', maxWidth: '1200px', margin: '20px auto', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.7)', position: 'relative' }}>
             
             {/* Sidebar */}
-            <div style={{ position: 'relative', width: window.innerWidth < 768 ? '100%' : '35%', minWidth: '300px', borderRight: '1px solid rgba(155, 142, 199, 0.2)', display: selectedChat && window.innerWidth < 768 ? 'none' : 'flex', flexDirection: 'column', background: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(10px)', overflow: 'hidden' }}>
+            <div style={{ position: 'relative', width: isMobile ? '100%' : '35%', minWidth: '300px', borderRight: '1px solid rgba(155, 142, 199, 0.2)', display: selectedChat && isMobile ? 'none' : 'flex', flexDirection: 'column', background: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(10px)', overflow: 'hidden' }}>
                 
                 {/* Artistic background blobs for the sidebar */}
                 <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '250px', height: '250px', background: 'radial-gradient(circle, rgba(97, 80, 157, 0.15) 0%, rgba(255,255,255,0) 70%)', borderRadius: '50%', zIndex: 0, pointerEvents: 'none' }}></div>
@@ -294,12 +302,12 @@ const Inbox = () => {
                     {/* Chat Header */}
                     <div style={{ padding: '15px 20px', borderBottom: '1px solid rgba(155, 142, 199, 0.2)', display: 'flex', alignItems: 'center', gap: '15px', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', zIndex: 10 }}>
                         <button onClick={() => {
-                            if (window.innerWidth < 768) {
-                                window.history.back(); // Pops the state we pushed, triggering popstate event -> setSelectedChat(null)
+                            if (isMobile) {
+                                window.history.back();
                             } else {
                                 setSelectedChat(null);
                             }
-                        }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: window.innerWidth < 768 ? 'flex' : 'none', color: 'var(--color-heading)', padding: '5px', borderRadius: '50%', backgroundColor: 'rgba(155,142,199,0.1)' }}>
+                        }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: isMobile ? 'flex' : 'none', color: 'var(--color-heading)', padding: '5px', borderRadius: '50%', backgroundColor: 'rgba(155,142,199,0.1)' }}>
                             <ArrowLeft size={22} />
                         </button>
                         <div style={{ width: '45px', height: '45px', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-primary), var(--color-tertiary))', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', boxShadow: '0 4px 10px rgba(97, 80, 157, 0.3)' }}>
@@ -364,7 +372,7 @@ const Inbox = () => {
                     </div>
                 </div>
             ) : (
-                <div style={{ flex: 1, display: window.innerWidth < 768 ? 'none' : 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.6))', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ flex: 1, display: isMobile ? 'none' : 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.6))', position: 'relative', overflow: 'hidden' }}>
                     {/* Quirky background floating elements */}
                     <div style={{ position: 'absolute', top: '20%', left: '20%', opacity: 0.1, animation: 'float 8s infinite' }}>🔍</div>
                     <div style={{ position: 'absolute', bottom: '25%', right: '15%', opacity: 0.1, animation: 'float 10s infinite reverse', fontSize: '3rem' }}>📍</div>
